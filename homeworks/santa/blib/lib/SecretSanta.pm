@@ -21,10 +21,11 @@ sub calculate {
 		}
 	}
 	my @transmitters = keys %h;
-	if (scalar @transmitters <= 2 or scalar @transmitters % 2 == 1) {
-		return "wrong data";
-	}
 	my @receivers = keys %h;
+
+	if (scalar @transmitters <= 2 or (scalar @transmitters  == 3 and $id_married == 2)) {
+		return "wrong input data";
+	}
 
 	while ( scalar @transmitters > 0) {
 		if (scalar @transmitters == 1 and scalar @receivers == 1) {
