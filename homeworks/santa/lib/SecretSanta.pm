@@ -21,6 +21,9 @@ sub calculate {
 		}
 	}
 	my @transmitters = keys %h;
+	if (scalar @transmitters <= 2 or scalar @transmitters % 2 == 1) {
+		return "wrong input data";
+	}
 	my @receivers = keys %h;
 
 	while ( scalar @transmitters > 0) {

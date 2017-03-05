@@ -21,6 +21,9 @@ sub calculate {
 		}
 	}
 	my @transmitters = keys %h;
+	if (scalar @transmitters <= 2 or scalar @transmitters % 2 == 1) {
+		return "wrong data";
+	}
 	my @receivers = keys %h;
 
 	while ( scalar @transmitters > 0) {
@@ -31,7 +34,7 @@ sub calculate {
 		}
 		if (scalar @transmitters == 2 and scalar @receivers == 2) {
 			if ($h{$transmitters[0]}[0] == $h{$receivers[1]}[0]) {
-				#goto &calculate;
+				goto &calculate;
 			}
 		}
 		my $i = int rand @transmitters;
