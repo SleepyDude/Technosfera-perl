@@ -1,4 +1,4 @@
-# This Makefile is for the DeepClone extension to perl.
+# This Makefile is for the Anagram extension to perl.
 #
 # It was generated automatically by MakeMaker version
 # 6.66 (Revision: 66600) from the contents of
@@ -13,10 +13,10 @@
 
 #     BUILD_REQUIRES => {  }
 #     CONFIGURE_REQUIRES => {  }
-#     NAME => q[DeepClone]
+#     NAME => q[Anagram]
 #     PREREQ_PM => {  }
 #     TEST_REQUIRES => {  }
-#     VERSION_FROM => q[bin/clone]
+#     VERSION_FROM => q[bin/anagram]
 
 # --- MakeMaker post_initialize section:
 
@@ -53,8 +53,8 @@ VENDORLIBEXP = /usr/share/perl5
 AR_STATIC_ARGS = cr
 DIRFILESEP = /
 DFSEP = $(DIRFILESEP)
-NAME = DeepClone
-NAME_SYM = DeepClone
+NAME = Anagram
+NAME_SYM = Anagram
 VERSION = 1
 VERSION_MACRO = VERSION
 VERSION_SYM = 1
@@ -143,11 +143,11 @@ MM_REVISION = 66600
 # PARENT_NAME = NAME without BASEEXT and no trailing :: (eg Foo::Bar)
 # DLBASE  = Basename part of dynamic library. May be just equal BASEEXT.
 MAKE = make
-FULLEXT = DeepClone
-BASEEXT = DeepClone
+FULLEXT = Anagram
+BASEEXT = Anagram
 PARENT_NAME = 
 DLBASE = $(BASEEXT)
-VERSION_FROM = bin/clone
+VERSION_FROM = bin/anagram
 OBJECT = 
 LDFROM = $(OBJECT)
 LINKTYPE = dynamic
@@ -159,7 +159,7 @@ C_FILES  =
 O_FILES  = 
 H_FILES  = 
 MAN1PODS = 
-MAN3PODS = lib/DeepClone.pm
+MAN3PODS = lib/Anagram.pm
 
 # Where is the Config information that we are using/depend on
 CONFIGDEP = $(PERL_ARCHLIB)$(DFSEP)Config.pm $(PERL_INC)$(DFSEP)config.h
@@ -181,10 +181,10 @@ PERL_ARCHIVE       =
 PERL_ARCHIVE_AFTER = 
 
 
-TO_INST_PM = lib/DeepClone.pm
+TO_INST_PM = lib/Anagram.pm
 
-PM_TO_BLIB = lib/DeepClone.pm \
-	blib/lib/DeepClone.pm
+PM_TO_BLIB = lib/Anagram.pm \
+	blib/lib/Anagram.pm
 
 
 # --- MakeMaker platform_constants section:
@@ -252,8 +252,8 @@ CI = ci -u
 RCS_LABEL = rcs -Nv$(VERSION_SYM): -q
 DIST_CP = best
 DIST_DEFAULT = tardist
-DISTNAME = DeepClone
-DISTVNAME = DeepClone-1
+DISTNAME = Anagram
+DISTVNAME = Anagram-1
 
 
 # --- MakeMaker macro section:
@@ -407,9 +407,9 @@ POD2MAN = $(POD2MAN_EXE)
 
 
 manifypods : pure_all  \
-	lib/DeepClone.pm
+	lib/Anagram.pm
 	$(NOECHO) $(POD2MAN) --section=$(MAN3EXT) --perm_rw=$(PERM_RW) \
-	  lib/DeepClone.pm $(INST_MAN3DIR)/DeepClone.$(MAN3EXT) 
+	  lib/Anagram.pm $(INST_MAN3DIR)/Anagram.$(MAN3EXT) 
 
 
 
@@ -436,22 +436,22 @@ clean_subdirs :
 
 clean :: clean_subdirs
 	- $(RM_F) \
-	  core.[0-9][0-9] MYMETA.json \
-	  so_locations core.[0-9][0-9][0-9][0-9] \
-	  pm_to_blib.ts core.*perl.*.? \
-	  perl$(EXE_EXT) $(BASEEXT).bso \
-	  $(BASEEXT).exp lib$(BASEEXT).def \
-	  pm_to_blib core \
-	  perl.exe $(INST_ARCHAUTODIR)/extralibs.ld \
-	  $(BASEEXT).def blibdirs.ts \
-	  core.[0-9] $(BASEEXT).x \
-	  mon.out tmon.out \
-	  core.[0-9][0-9][0-9][0-9][0-9] $(MAKE_APERL_FILE) \
-	  $(INST_ARCHAUTODIR)/extralibs.all perl \
-	  MYMETA.yml *$(LIB_EXT) \
-	  $(BOOTSTRAP) *$(OBJ_EXT) \
-	  perlmain.c *perl.core \
-	  core.[0-9][0-9][0-9] 
+	  MYMETA.yml core.[0-9][0-9][0-9][0-9][0-9] \
+	  $(BASEEXT).def core.*perl.*.? \
+	  $(BASEEXT).bso core.[0-9][0-9] \
+	  $(INST_ARCHAUTODIR)/extralibs.ld lib$(BASEEXT).def \
+	  *perl.core $(BOOTSTRAP) \
+	  $(INST_ARCHAUTODIR)/extralibs.all MYMETA.json \
+	  pm_to_blib so_locations \
+	  core.[0-9][0-9][0-9][0-9] mon.out \
+	  $(BASEEXT).x blibdirs.ts \
+	  pm_to_blib.ts perlmain.c \
+	  core.[0-9][0-9][0-9] core \
+	  perl$(EXE_EXT) $(BASEEXT).exp \
+	  $(MAKE_APERL_FILE) *$(LIB_EXT) \
+	  *$(OBJ_EXT) core.[0-9] \
+	  perl perl.exe \
+	  tmon.out 
 	- $(RM_RF) \
 	  blib 
 	- $(MV) $(FIRST_MAKEFILE) $(MAKEFILE_OLD) $(DEV_NULL)
@@ -488,7 +488,7 @@ metafile : create_distdir
 	$(NOECHO) $(ECHO) 'meta-spec:' >> META_new.yml
 	$(NOECHO) $(ECHO) '  url: http://module-build.sourceforge.net/META-spec-v1.4.html' >> META_new.yml
 	$(NOECHO) $(ECHO) '  version: 1.4' >> META_new.yml
-	$(NOECHO) $(ECHO) 'name: DeepClone' >> META_new.yml
+	$(NOECHO) $(ECHO) 'name: Anagram' >> META_new.yml
 	$(NOECHO) $(ECHO) 'no_index:' >> META_new.yml
 	$(NOECHO) $(ECHO) '  directory:' >> META_new.yml
 	$(NOECHO) $(ECHO) '    - t' >> META_new.yml
@@ -511,7 +511,7 @@ metafile : create_distdir
 	$(NOECHO) $(ECHO) '      "url" : "http://search.cpan.org/perldoc?CPAN::Meta::Spec",' >> META_new.json
 	$(NOECHO) $(ECHO) '      "version" : "2"' >> META_new.json
 	$(NOECHO) $(ECHO) '   },' >> META_new.json
-	$(NOECHO) $(ECHO) '   "name" : "DeepClone",' >> META_new.json
+	$(NOECHO) $(ECHO) '   "name" : "Anagram",' >> META_new.json
 	$(NOECHO) $(ECHO) '   "no_index" : {' >> META_new.json
 	$(NOECHO) $(ECHO) '      "directory" : [' >> META_new.json
 	$(NOECHO) $(ECHO) '         "t",' >> META_new.json
@@ -821,7 +821,7 @@ ppd :
 
 pm_to_blib : $(FIRST_MAKEFILE) $(TO_INST_PM)
 	$(NOECHO) $(ABSPERLRUN) -MExtUtils::Install -e 'pm_to_blib({@ARGV}, '\''$(INST_LIB)/auto'\'', q[$(PM_FILTER)], '\''$(PERM_DIR)'\'')' -- \
-	  lib/DeepClone.pm blib/lib/DeepClone.pm 
+	  lib/Anagram.pm blib/lib/Anagram.pm 
 	$(NOECHO) $(TOUCH) pm_to_blib
 
 
