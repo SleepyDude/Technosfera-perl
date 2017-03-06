@@ -24,7 +24,7 @@ sub calculate {
 	my @receivers = keys %h;
 
 	if (scalar @transmitters <= 2 or (scalar @transmitters  == 3 and $id_married == 2)) {
-		return "wrong input data";
+		return ();
 	}
 
 	while ( scalar @transmitters > 0) {

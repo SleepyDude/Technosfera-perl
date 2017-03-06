@@ -1,4 +1,4 @@
-# This Makefile is for the SecretSanta extension to perl.
+# This Makefile is for the DeepClone extension to perl.
 #
 # It was generated automatically by MakeMaker version
 # 6.66 (Revision: 66600) from the contents of
@@ -13,10 +13,10 @@
 
 #     BUILD_REQUIRES => {  }
 #     CONFIGURE_REQUIRES => {  }
-#     NAME => q[SecretSanta]
+#     NAME => q[DeepClone]
 #     PREREQ_PM => {  }
 #     TEST_REQUIRES => {  }
-#     VERSION_FROM => q[bin/santa]
+#     VERSION_FROM => q[bin/clone]
 
 # --- MakeMaker post_initialize section:
 
@@ -53,8 +53,8 @@ VENDORLIBEXP = /usr/share/perl5
 AR_STATIC_ARGS = cr
 DIRFILESEP = /
 DFSEP = $(DIRFILESEP)
-NAME = SecretSanta
-NAME_SYM = SecretSanta
+NAME = DeepClone
+NAME_SYM = DeepClone
 VERSION = 1
 VERSION_MACRO = VERSION
 VERSION_SYM = 1
@@ -143,11 +143,11 @@ MM_REVISION = 66600
 # PARENT_NAME = NAME without BASEEXT and no trailing :: (eg Foo::Bar)
 # DLBASE  = Basename part of dynamic library. May be just equal BASEEXT.
 MAKE = make
-FULLEXT = SecretSanta
-BASEEXT = SecretSanta
+FULLEXT = DeepClone
+BASEEXT = DeepClone
 PARENT_NAME = 
 DLBASE = $(BASEEXT)
-VERSION_FROM = bin/santa
+VERSION_FROM = bin/clone
 OBJECT = 
 LDFROM = $(OBJECT)
 LINKTYPE = dynamic
@@ -159,7 +159,7 @@ C_FILES  =
 O_FILES  = 
 H_FILES  = 
 MAN1PODS = 
-MAN3PODS = 
+MAN3PODS = lib/DeepClone.pm
 
 # Where is the Config information that we are using/depend on
 CONFIGDEP = $(PERL_ARCHLIB)$(DFSEP)Config.pm $(PERL_INC)$(DFSEP)config.h
@@ -181,10 +181,10 @@ PERL_ARCHIVE       =
 PERL_ARCHIVE_AFTER = 
 
 
-TO_INST_PM = lib/SecretSanta.pm
+TO_INST_PM = lib/DeepClone.pm
 
-PM_TO_BLIB = lib/SecretSanta.pm \
-	blib/lib/SecretSanta.pm
+PM_TO_BLIB = lib/DeepClone.pm \
+	blib/lib/DeepClone.pm
 
 
 # --- MakeMaker platform_constants section:
@@ -252,8 +252,8 @@ CI = ci -u
 RCS_LABEL = rcs -Nv$(VERSION_SYM): -q
 DIST_CP = best
 DIST_DEFAULT = tardist
-DISTNAME = SecretSanta
-DISTVNAME = SecretSanta-1
+DISTNAME = DeepClone
+DISTVNAME = DeepClone-1
 
 
 # --- MakeMaker macro section:
@@ -406,8 +406,10 @@ POD2MAN_EXE = $(PERLRUN) "-MExtUtils::Command::MM" -e pod2man "--"
 POD2MAN = $(POD2MAN_EXE)
 
 
-manifypods : pure_all 
-	$(NOECHO) $(NOOP)
+manifypods : pure_all  \
+	lib/DeepClone.pm
+	$(NOECHO) $(POD2MAN) --section=$(MAN3EXT) --perm_rw=$(PERM_RW) \
+	  lib/DeepClone.pm $(INST_MAN3DIR)/DeepClone.$(MAN3EXT) 
 
 
 
@@ -434,22 +436,22 @@ clean_subdirs :
 
 clean :: clean_subdirs
 	- $(RM_F) \
-	  core pm_to_blib \
-	  $(INST_ARCHAUTODIR)/extralibs.all $(BASEEXT).bso \
-	  MYMETA.json pm_to_blib.ts \
-	  so_locations blibdirs.ts \
-	  $(BOOTSTRAP) tmon.out \
-	  *$(OBJ_EXT) core.*perl.*.? \
-	  core.[0-9] $(BASEEXT).def \
-	  *$(LIB_EXT) lib$(BASEEXT).def \
-	  core.[0-9][0-9] core.[0-9][0-9][0-9] \
-	  perl $(BASEEXT).x \
-	  perlmain.c $(BASEEXT).exp \
-	  core.[0-9][0-9][0-9][0-9] MYMETA.yml \
-	  perl$(EXE_EXT) *perl.core \
-	  $(INST_ARCHAUTODIR)/extralibs.ld mon.out \
-	  $(MAKE_APERL_FILE) core.[0-9][0-9][0-9][0-9][0-9] \
-	  perl.exe 
+	  core.*perl.*.? lib$(BASEEXT).def \
+	  $(BOOTSTRAP) $(BASEEXT).def \
+	  mon.out perl \
+	  $(BASEEXT).bso perl.exe \
+	  *$(OBJ_EXT) core.[0-9][0-9] \
+	  so_locations $(INST_ARCHAUTODIR)/extralibs.all \
+	  tmon.out $(BASEEXT).exp \
+	  core.[0-9][0-9][0-9] $(MAKE_APERL_FILE) \
+	  pm_to_blib MYMETA.json \
+	  core.[0-9] perlmain.c \
+	  *perl.core core.[0-9][0-9][0-9][0-9][0-9] \
+	  MYMETA.yml pm_to_blib.ts \
+	  $(INST_ARCHAUTODIR)/extralibs.ld core.[0-9][0-9][0-9][0-9] \
+	  perl$(EXE_EXT) *$(LIB_EXT) \
+	  $(BASEEXT).x core \
+	  blibdirs.ts 
 	- $(RM_RF) \
 	  blib 
 	- $(MV) $(FIRST_MAKEFILE) $(MAKEFILE_OLD) $(DEV_NULL)
@@ -464,7 +466,7 @@ realclean_subdirs :
 # Delete temporary files (via clean) and also delete dist files
 realclean purge ::  clean realclean_subdirs
 	- $(RM_F) \
-	  $(MAKEFILE_OLD) $(FIRST_MAKEFILE) 
+	  $(FIRST_MAKEFILE) $(MAKEFILE_OLD) 
 	- $(RM_RF) \
 	  $(DISTVNAME) 
 
@@ -486,7 +488,7 @@ metafile : create_distdir
 	$(NOECHO) $(ECHO) 'meta-spec:' >> META_new.yml
 	$(NOECHO) $(ECHO) '  url: http://module-build.sourceforge.net/META-spec-v1.4.html' >> META_new.yml
 	$(NOECHO) $(ECHO) '  version: 1.4' >> META_new.yml
-	$(NOECHO) $(ECHO) 'name: SecretSanta' >> META_new.yml
+	$(NOECHO) $(ECHO) 'name: DeepClone' >> META_new.yml
 	$(NOECHO) $(ECHO) 'no_index:' >> META_new.yml
 	$(NOECHO) $(ECHO) '  directory:' >> META_new.yml
 	$(NOECHO) $(ECHO) '    - t' >> META_new.yml
@@ -509,7 +511,7 @@ metafile : create_distdir
 	$(NOECHO) $(ECHO) '      "url" : "http://search.cpan.org/perldoc?CPAN::Meta::Spec",' >> META_new.json
 	$(NOECHO) $(ECHO) '      "version" : "2"' >> META_new.json
 	$(NOECHO) $(ECHO) '   },' >> META_new.json
-	$(NOECHO) $(ECHO) '   "name" : "SecretSanta",' >> META_new.json
+	$(NOECHO) $(ECHO) '   "name" : "DeepClone",' >> META_new.json
 	$(NOECHO) $(ECHO) '   "no_index" : {' >> META_new.json
 	$(NOECHO) $(ECHO) '      "directory" : [' >> META_new.json
 	$(NOECHO) $(ECHO) '         "t",' >> META_new.json
@@ -819,7 +821,7 @@ ppd :
 
 pm_to_blib : $(FIRST_MAKEFILE) $(TO_INST_PM)
 	$(NOECHO) $(ABSPERLRUN) -MExtUtils::Install -e 'pm_to_blib({@ARGV}, '\''$(INST_LIB)/auto'\'', q[$(PM_FILTER)], '\''$(PERM_DIR)'\'')' -- \
-	  lib/SecretSanta.pm blib/lib/SecretSanta.pm 
+	  lib/DeepClone.pm blib/lib/DeepClone.pm 
 	$(NOECHO) $(TOUCH) pm_to_blib
 
 

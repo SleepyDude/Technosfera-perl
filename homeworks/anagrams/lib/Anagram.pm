@@ -3,7 +3,13 @@ package Anagram;
 use 5.010;
 use strict;
 use warnings;
-
+use utf8;
+use Text::Levenshtein qw/distance/;
+use Encode qw/encode decode/;
+use Data::Dumper;
+# use open qw(:std :utf8);
+# use Encode qw(decode_utf8);
+# BEGIN{ @ARGV = map decode_utf8($_, 1), @ARGV; }
 =encoding UTF8
 
 =head1 SYNOPSIS
@@ -42,10 +48,27 @@ anagram(['пятак', 'ЛиСток', 'пятка', 'стул', 'ПяТаК', '
 sub anagram {
     my $words_list = shift;
     my %result;
+    my %w;
+    foreach (@$words_list) {
+    	my $word = decode('utf-8',$_);
+    	$word = lc $word;
+    	$word = encode('utf-8',$word);
+    	# my $word = lc $_;
+    	my $i = join('', sort split('', $word));
+    	if (exists $w{$i}) {
+    		next if $w{$i} =~ /$word/;
+    		$w{$i} .= " ";
+    	}
+    	$w{$i} .= $word;
+    }
+    for (values %w) {
+    	my @values = split(' ', $_);
+    	my $first =  $values[0];
+    	@values = sort @values;
+    	$result{$first} = \@values if (scalar @values > 1);
+    }
 
-    #
-    # Поиск анограмм
-    #
+    
 
     return \%result;
 }
