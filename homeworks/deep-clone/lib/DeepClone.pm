@@ -35,9 +35,12 @@ use warnings;
 =cut
 
 sub clone {
+	return _clone(@_);
+}
+
+sub _clone ($orig, $refs) {
 	my ($orig, $refs) = @_;
 	my $cloned;
-
 	if (my $ref = ref $orig) {
 		if ($ref eq 'ARRAY') {
 			if (exists $refs->{$orig}) {
@@ -46,7 +49,7 @@ sub clone {
 			else {
 				my @a;
 				$refs->{$orig} = \@a;
-				push @a, clone($_, $refs) for @$orig;
+				push @a, _clone($_, $refs) for @$orig;
 				$cloned = \@a;
 				$refs->{$orig} = $cloned;
 			}
@@ -59,7 +62,7 @@ sub clone {
 				my %h;
 				$refs->{$orig} = \%h;
 				while (my ($k,$v) = each %$orig) {
-					$h{$k} = clone($v, $refs);
+					$h{$k} = _clone($v, $refs);
 				}
 				$cloned = \%h;
 				$refs->{$orig} = $cloned;
@@ -67,6 +70,7 @@ sub clone {
 		}
 		else {
 			$refs->{"unacceptable"} = "unacceptable condition!";
+			return undef;
 		}
 	}
 	else {

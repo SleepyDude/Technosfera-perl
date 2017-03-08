@@ -4,6 +4,7 @@ use 5.010;
 use strict;
 use warnings;
 use Encode qw/encode decode/;
+use utf8;
 
 =encoding UTF8
 
@@ -47,19 +48,21 @@ sub anagram {
     foreach (@$words_list) {
     	my $word = decode('utf-8',$_);
     	$word = lc $word;
-    	$word = encode('utf-8',$word);
     	my $i = join('', sort split('', $word));
-    	if (exists $w{$i}) {
-    		next if $w{$i} =~ /$word/;
-    		$w{$i} .= " ";
-    	}
-    	$w{$i} .= $word;
+    	next if (exists $w{$i} and exists $result{$w{$i}[0]});
+        push @{ $w{$i} }, $word;
+        push @{ $result{$w{$i}[0]} }, $word;
     }
-    for (values %w) {
-    	my @values = split(' ', $_);
-    	my $first =  $values[0];
-    	@values = sort @values;
-    	$result{$first} = \@values if (scalar @values > 1);
+    for (keys %result) {
+    	if (scalar @{ $result{$_} } < 2) {
+            delete $result{$_};
+        }
+        else {
+            @{ $result{$_} } = sort @{ $result{$_} };
+            for my $var ( @{ $result{$_} } ) {
+                $var = encode('utf-8',$var);
+            }
+        }
     }
     return \%result;
 }
