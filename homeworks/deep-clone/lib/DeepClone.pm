@@ -39,7 +39,7 @@ sub clone {
 	return _clone($var);
 }
 
-sub _clone ($orig, $refs) {
+sub _clone {
 	my ($orig, $refs) = @_;
 	my $cloned;
 	if (my $ref = ref $orig) {
@@ -51,6 +51,7 @@ sub _clone ($orig, $refs) {
 				my @a;
 				$refs->{$orig} = \@a;
 				push @a, _clone($_, $refs) for @$orig;
+				return undef if exists $refs->{"unacceptable"};
 				$cloned = \@a;
 				$refs->{$orig} = $cloned;
 			}
@@ -64,6 +65,7 @@ sub _clone ($orig, $refs) {
 				$refs->{$orig} = \%h;
 				while (my ($k,$v) = each %$orig) {
 					$h{$k} = _clone($v, $refs);
+					return undef if exists $refs->{"unacceptable"};
 				}
 				$cloned = \%h;
 				$refs->{$orig} = $cloned;
@@ -76,9 +78,6 @@ sub _clone ($orig, $refs) {
 	}
 	else {
 		$cloned = $orig;
-	}
-	if (exists $refs->{"unacceptable"}) {
-		return undef;
 	}
 	return $cloned;
 }
