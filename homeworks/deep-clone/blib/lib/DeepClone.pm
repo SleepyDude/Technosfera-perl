@@ -35,7 +35,8 @@ use warnings;
 =cut
 
 sub clone {
-	return _clone(@_);
+	my $var = shift;
+	return _clone($var);
 }
 
 sub _clone ($orig, $refs) {
