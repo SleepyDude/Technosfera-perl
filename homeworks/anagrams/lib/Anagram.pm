@@ -49,16 +49,17 @@ sub anagram {
     	my $word = decode('utf-8',$_);
     	$word = lc $word;
     	my $i = join('', sort split('', $word));
-    	next if (exists $w{$i} and exists $result{$w{$i}[0]});
+    	next if (exists $w{$i} and exists $result{$word});
         push @{ $w{$i} }, $word;
-        push @{ $result{$w{$i}[0]} }, $word;
+        $result{$word} = [1];
+        push @{ $result{encode('utf-8',$w{$i}[0])} }, $word;
     }
     foreach (keys %result) {
-    	if (scalar @{ $result{$_} } < 2) {
-            delete $result{$_};
+     	if (scalar @{ $result{$_} } < 2) {
+             delete $result{$_};
         }
         else {
-            @{ $result{$_} } = sort @{ $result{$_} };
+             @{ $result{$_} } = sort @{ $result{$_} };
             for my $var ( @{ $result{$_} } ) {
                 $var = encode('utf-8',$var);
             }
