@@ -23,7 +23,11 @@ sub parse_file {
 
         # you can put your code here
         # $log_line contains line from log file
-
+        my %line;
+        my %time;
+        $line{"IP"} = $log_line =~ /(\b\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\b)/;
+        ($time{"day"}, $time{"month"}, $time{"year"}, 
+         $time{"hours"}, $time{"minutes"}, $time{"seconds"}) = $log_line =~ /\[(\d+)\/(.+)\/(\d+):(\d+):(\d+):(\d+).+\]/;
     }
     close $fd;
 
