@@ -2,7 +2,6 @@
 
 use strict;
 use warnings;
-use feature 'say';
 use DDP;
 
 
@@ -21,11 +20,11 @@ sub parse_file {
     open my $fd, "-|", "bunzip2 < $file" or die "Can't open '$file': $!";
     while (my $log_line = <$fd>) {
         my %time;
-        $log_line =~ /(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})/;
+        $log_line =~ /^(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})/;
         my $ip = $1;
         $res{$ip}->{count} += 1;
         $res{total}->{count} += 1;
-        $log_line =~ /\[(\d+\/.+\/\d+:\d+:\d+).+\]/;
+        $log_line =~ /\[(\d+\/.+?\/\d+:\d+:\d+).+\]/;
         $res{$ip}->{minutes}->{$1} = 1;
         $res{total}->{minutes}->{$1} = 1;
         $log_line =~ /\s(\d{3})\s(\d+)/;
@@ -36,15 +35,16 @@ sub parse_file {
         $log_line =~ /"(\d+(?:\.\d+)?|-)"$/;
         my $zipC = $1 eq "-" ? 1 : $1;
         if ($status == 200) {
-            $res{$ip}->{data} += $zipC * $data;
-            $res{total}->{data} += $zipC * $data;
+            $res{$ip}->{data} += int($zipC * $data);
+            $res{total}->{data} += int($zipC * $data);
         }
     }
     close $fd;
 
     for my $ip (keys %res) {
-        $res{$ip}->{avg} = $res{$ip}->{count} / scalar( keys $res{$ip}->{minutes} )
+        $res{$ip}->{avg} = $res{$ip}->{count} / scalar( keys $res{$ip}->{minutes} );
     }
+
     $result = \%res;
     return $result;
 }
@@ -52,13 +52,13 @@ sub parse_file {
 sub report {
     my $result = shift;
     my @stat;
-    @stat = keys $result->{"total"}->{"status"};
+    @stat = keys $result->{total}->{status};
     @stat = sort { $a <=> $b } @stat;
     print "IP\tcount\tavg\tdata";
     for (@stat) {
         print "\t$_"
     }
-    say '';
+    print "\n";
     for my $key ((sort {$result->{$b}->{count} <=> $result->{$a}->{count}} keys %$result)[0..10]) {
         print $key . "\t";
         print $result->{$key}->{count} . "\t";
