@@ -42,7 +42,7 @@ sub parse_file {
     close $fd;
 
     for my $ip (keys %res) {
-        $res{$ip}->{avg} = $res{$ip}->{count} / scalar( keys $res{$ip}->{minutes} );
+        $res{$ip}->{avg} = $res{$ip}->{count} / scalar( keys %{ $res{$ip}->{minutes} } );
     }
 
     $result = \%res;
@@ -52,7 +52,7 @@ sub parse_file {
 sub report {
     my $result = shift;
     my @stat;
-    @stat = keys $result->{total}->{status};
+    @stat = keys %{ $result->{total}->{status} };
     @stat = sort { $a <=> $b } @stat;
     print "IP\tcount\tavg\tdata";
     for (@stat) {
