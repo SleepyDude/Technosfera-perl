@@ -161,6 +161,8 @@ H_FILES  =
 MAN1PODS = 
 MAN3PODS = lib/Local/Reducer.pm \
 	lib/Local/Reducer/MaxDiff.pm \
+	lib/Local/Reducer/MinMaxAvg.pm \
+	lib/Local/Reducer/MinMaxAvg/Result.pm \
 	lib/Local/Reducer/Sum.pm \
 	lib/Local/Row.pm \
 	lib/Local/Row/JSON.pm \
@@ -191,6 +193,8 @@ PERL_ARCHIVE_AFTER =
 
 TO_INST_PM = lib/Local/Reducer.pm \
 	lib/Local/Reducer/MaxDiff.pm \
+	lib/Local/Reducer/MinMaxAvg.pm \
+	lib/Local/Reducer/MinMaxAvg/Result.pm \
 	lib/Local/Reducer/Sum.pm \
 	lib/Local/Row.pm \
 	lib/Local/Row/JSON.pm \
@@ -199,22 +203,26 @@ TO_INST_PM = lib/Local/Reducer.pm \
 	lib/Local/Source/Array.pm \
 	lib/Local/Source/Text.pm
 
-PM_TO_BLIB = lib/Local/Row/JSON.pm \
+PM_TO_BLIB = lib/Local/Reducer.pm \
+	blib/lib/Local/Reducer.pm \
+	lib/Local/Row/JSON.pm \
 	blib/lib/Local/Row/JSON.pm \
+	lib/Local/Source/Text.pm \
+	blib/lib/Local/Source/Text.pm \
+	lib/Local/Reducer/MinMaxAvg/Result.pm \
+	blib/lib/Local/Reducer/MinMaxAvg/Result.pm \
+	lib/Local/Reducer/Sum.pm \
+	blib/lib/Local/Reducer/Sum.pm \
 	lib/Local/Source/Array.pm \
 	blib/lib/Local/Source/Array.pm \
-	lib/Local/Reducer.pm \
-	blib/lib/Local/Reducer.pm \
 	lib/Local/Row/Simple.pm \
 	blib/lib/Local/Row/Simple.pm \
 	lib/Local/Source.pm \
 	blib/lib/Local/Source.pm \
 	lib/Local/Reducer/MaxDiff.pm \
 	blib/lib/Local/Reducer/MaxDiff.pm \
-	lib/Local/Source/Text.pm \
-	blib/lib/Local/Source/Text.pm \
-	lib/Local/Reducer/Sum.pm \
-	blib/lib/Local/Reducer/Sum.pm \
+	lib/Local/Reducer/MinMaxAvg.pm \
+	blib/lib/Local/Reducer/MinMaxAvg.pm \
 	lib/Local/Row.pm \
 	blib/lib/Local/Row.pm
 
@@ -439,24 +447,28 @@ POD2MAN = $(POD2MAN_EXE)
 
 
 manifypods : pure_all  \
-	lib/Local/Source/Array.pm \
-	lib/Local/Row/JSON.pm \
-	lib/Local/Reducer.pm \
 	lib/Local/Row/Simple.pm \
 	lib/Local/Source.pm \
-	lib/Local/Reducer/MaxDiff.pm \
+	lib/Local/Source/Array.pm \
+	lib/Local/Reducer/MinMaxAvg.pm \
 	lib/Local/Row.pm \
+	lib/Local/Reducer/MaxDiff.pm \
+	lib/Local/Row/JSON.pm \
+	lib/Local/Reducer.pm \
 	lib/Local/Reducer/Sum.pm \
+	lib/Local/Reducer/MinMaxAvg/Result.pm \
 	lib/Local/Source/Text.pm
 	$(NOECHO) $(POD2MAN) --section=$(MAN3EXT) --perm_rw=$(PERM_RW) \
-	  lib/Local/Source/Array.pm $(INST_MAN3DIR)/Local::Source::Array.$(MAN3EXT) \
-	  lib/Local/Row/JSON.pm $(INST_MAN3DIR)/Local::Row::JSON.$(MAN3EXT) \
-	  lib/Local/Reducer.pm $(INST_MAN3DIR)/Local::Reducer.$(MAN3EXT) \
 	  lib/Local/Row/Simple.pm $(INST_MAN3DIR)/Local::Row::Simple.$(MAN3EXT) \
 	  lib/Local/Source.pm $(INST_MAN3DIR)/Local::Source.$(MAN3EXT) \
-	  lib/Local/Reducer/MaxDiff.pm $(INST_MAN3DIR)/Local::Reducer::MaxDiff.$(MAN3EXT) \
+	  lib/Local/Source/Array.pm $(INST_MAN3DIR)/Local::Source::Array.$(MAN3EXT) \
+	  lib/Local/Reducer/MinMaxAvg.pm $(INST_MAN3DIR)/Local::Reducer::MinMaxAvg.$(MAN3EXT) \
 	  lib/Local/Row.pm $(INST_MAN3DIR)/Local::Row.$(MAN3EXT) \
+	  lib/Local/Reducer/MaxDiff.pm $(INST_MAN3DIR)/Local::Reducer::MaxDiff.$(MAN3EXT) \
+	  lib/Local/Row/JSON.pm $(INST_MAN3DIR)/Local::Row::JSON.$(MAN3EXT) \
+	  lib/Local/Reducer.pm $(INST_MAN3DIR)/Local::Reducer.$(MAN3EXT) \
 	  lib/Local/Reducer/Sum.pm $(INST_MAN3DIR)/Local::Reducer::Sum.$(MAN3EXT) \
+	  lib/Local/Reducer/MinMaxAvg/Result.pm $(INST_MAN3DIR)/Local::Reducer::MinMaxAvg::Result.$(MAN3EXT) \
 	  lib/Local/Source/Text.pm $(INST_MAN3DIR)/Local::Source::Text.$(MAN3EXT) 
 
 
@@ -484,22 +496,22 @@ clean_subdirs :
 
 clean :: clean_subdirs
 	- $(RM_F) \
-	  tmon.out $(BASEEXT).exp \
-	  lib$(BASEEXT).def perl \
-	  $(BOOTSTRAP) core.[0-9][0-9][0-9][0-9][0-9] \
-	  pm_to_blib.ts perl$(EXE_EXT) \
-	  blibdirs.ts MYMETA.yml \
-	  core.*perl.*.? *perl.core \
-	  *$(LIB_EXT) core \
-	  core.[0-9][0-9][0-9][0-9] *$(OBJ_EXT) \
-	  perlmain.c so_locations \
-	  $(BASEEXT).bso core.[0-9][0-9][0-9] \
-	  $(MAKE_APERL_FILE) core.[0-9] \
-	  $(BASEEXT).def perl.exe \
-	  $(INST_ARCHAUTODIR)/extralibs.all mon.out \
-	  $(INST_ARCHAUTODIR)/extralibs.ld $(BASEEXT).x \
-	  MYMETA.json core.[0-9][0-9] \
-	  pm_to_blib 
+	  $(BASEEXT).x core \
+	  *perl.core pm_to_blib.ts \
+	  $(BASEEXT).exp perl$(EXE_EXT) \
+	  $(BASEEXT).bso MYMETA.yml \
+	  core.[0-9][0-9] MYMETA.json \
+	  core.[0-9] perl.exe \
+	  $(BASEEXT).def core.[0-9][0-9][0-9][0-9][0-9] \
+	  blibdirs.ts $(INST_ARCHAUTODIR)/extralibs.all \
+	  lib$(BASEEXT).def so_locations \
+	  core.*perl.*.? $(MAKE_APERL_FILE) \
+	  $(BOOTSTRAP) mon.out \
+	  $(INST_ARCHAUTODIR)/extralibs.ld core.[0-9][0-9][0-9] \
+	  perlmain.c tmon.out \
+	  *$(LIB_EXT) perl \
+	  pm_to_blib *$(OBJ_EXT) \
+	  core.[0-9][0-9][0-9][0-9] 
 	- $(RM_RF) \
 	  blib 
 	- $(MV) $(FIRST_MAKEFILE) $(MAKEFILE_OLD) $(DEV_NULL)
@@ -514,7 +526,7 @@ realclean_subdirs :
 # Delete temporary files (via clean) and also delete dist files
 realclean purge ::  clean realclean_subdirs
 	- $(RM_F) \
-	  $(MAKEFILE_OLD) $(FIRST_MAKEFILE) 
+	  $(FIRST_MAKEFILE) $(MAKEFILE_OLD) 
 	- $(RM_RF) \
 	  $(DISTVNAME) 
 
@@ -869,14 +881,16 @@ ppd :
 
 pm_to_blib : $(FIRST_MAKEFILE) $(TO_INST_PM)
 	$(NOECHO) $(ABSPERLRUN) -MExtUtils::Install -e 'pm_to_blib({@ARGV}, '\''$(INST_LIB)/auto'\'', q[$(PM_FILTER)], '\''$(PERM_DIR)'\'')' -- \
-	  lib/Local/Row/JSON.pm blib/lib/Local/Row/JSON.pm \
-	  lib/Local/Source/Array.pm blib/lib/Local/Source/Array.pm \
 	  lib/Local/Reducer.pm blib/lib/Local/Reducer.pm \
+	  lib/Local/Row/JSON.pm blib/lib/Local/Row/JSON.pm \
+	  lib/Local/Source/Text.pm blib/lib/Local/Source/Text.pm \
+	  lib/Local/Reducer/MinMaxAvg/Result.pm blib/lib/Local/Reducer/MinMaxAvg/Result.pm \
+	  lib/Local/Reducer/Sum.pm blib/lib/Local/Reducer/Sum.pm \
+	  lib/Local/Source/Array.pm blib/lib/Local/Source/Array.pm \
 	  lib/Local/Row/Simple.pm blib/lib/Local/Row/Simple.pm \
 	  lib/Local/Source.pm blib/lib/Local/Source.pm \
 	  lib/Local/Reducer/MaxDiff.pm blib/lib/Local/Reducer/MaxDiff.pm \
-	  lib/Local/Source/Text.pm blib/lib/Local/Source/Text.pm \
-	  lib/Local/Reducer/Sum.pm blib/lib/Local/Reducer/Sum.pm \
+	  lib/Local/Reducer/MinMaxAvg.pm blib/lib/Local/Reducer/MinMaxAvg.pm \
 	  lib/Local/Row.pm blib/lib/Local/Row.pm 
 	$(NOECHO) $(TOUCH) pm_to_blib
 

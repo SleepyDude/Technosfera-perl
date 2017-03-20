@@ -35,7 +35,6 @@ sub set_item {
 	self->{max} = $_[0] if self->{max} < $_[0];
 	self->{sum} += $_[0];
 	self->{count} += 1;
-	self->{avg} = self->{sum} / self->{count};
 }
 
 sub get_min {
