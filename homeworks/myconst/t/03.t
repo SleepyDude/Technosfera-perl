@@ -3,8 +3,6 @@
 use strict;
 use warnings;
 use Test::More tests => 7;
-use FindBin;
-use lib "$FindBin::Bin/../lib";
 
 use myconst math => {PI => 3.14, E => 2.7 }, STRING => 'some string';
 

@@ -2,7 +2,8 @@ package myconst;
 
 use strict;
 use warnings;
-use Exporter;
+use Scalar::Util 'looks_like_number';
+use Exporter qw/import/;
 use DDP;
 use Data::Dumper;
 
@@ -44,22 +45,17 @@ our %constants;
 
 sub import {
 	my ($module, @str) = @_;
-	die if scalar @str == 1;
-
-	foreach (@str) {
-		die if !defined $_;
-	}
-
 	my %h = (@str);
+
 	my @deep = ("all");
 	hash_parser(\%h, @deep);
 
 	my $caller = caller;
-	no strict 'refs';
 	for my $key (keys %constants) {
+		no strict 'refs';
 		*{"$caller::$key"} = sub() { $constants{$key}; };
+		use strict 'refs';
 	}
-	use strict 'refs';
 }
 
 
@@ -69,23 +65,15 @@ sub hash_parser {
 	my %h = %{ $href };
 
 	foreach my $key (keys %h) {
-		die if $key eq '';
 		if ( !ref $h{$key} ) {
-			die if $h{$key} eq '';
 			for my $group (@deep) {
 				push @{ $EXPORT_TAGS{ $group } }, $key;
 				$constants{$key} = $h{$key};
 			}
 		} elsif ( ref $h{$key} eq 'HASH' ) {
-			if( %{ $h{$key} } ) {
-				push @deep, $key;
-				hash_parser($h{$key}, @deep);
-				pop @deep;
-			} else { 
-				die; 
-			}
-		} else {
-			die;
+			push @deep, $key;
+			hash_parser($h{$key}, @deep);
+			pop @deep;
 		}
 	}
 }
