@@ -45,7 +45,7 @@ sub reduce_all {
 		my $row = $row_class->new(str => $string); 
 		if (looks_like_number($row->get($top, 0)) and looks_like_number($row->get($bottom, 0))) {
 			my $diff = $row->get($top, 0) - $row->get($bottom, 0);
-				$res = $diff if ($diff > $res);
+			$res = $diff if ($diff > $res);
 		}
 	}
 	$self->{reduced} = $res;
