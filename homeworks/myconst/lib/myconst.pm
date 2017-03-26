@@ -50,8 +50,29 @@ sub import {
 	}
 
 	my %h = (@str);
-	my @deep = ("all");
-	hash_parser(\%h, @deep);
+	foreach my $key (keys %h) {
+		die if $key eq '';
+		if ( !ref $h{$key} ) {
+			die if $h{$key} eq '';
+			push @{ $exp_groups{all} }, $key;
+			$constants{$key} = $h{$key};
+		} elsif ( ref $h{$key} eq 'HASH' ) {
+			if( %{ $h{$key} } ) {
+				foreach my $inside_key (keys %{ $h{$key} }) {
+					die if $inside_key eq '';
+					die if $h{$key}->{$inside_key} eq '';
+					die if ref $h{$key}->{$inside_key};
+					push @{ $exp_groups{all} }, $inside_key;
+					push @{ $exp_groups{$key} }, $inside_key;
+					$constants{$inside_key} = $h{$key}->{$inside_key};
+				}
+			} else { 
+				die; 
+			}
+		} else {
+			die;
+		}
+	}
 
 	my $caller = caller;
 	no strict 'refs';
@@ -76,34 +97,6 @@ sub import {
 			}
 		}
 	};
-}
-
-
-sub hash_parser {
-	my $href = shift;
-	my @deep = @_;
-	my %h = %{ $href };
-
-	foreach my $key (keys %h) {
-		die if $key eq '';
-		if ( !ref $h{$key} ) {
-			die if $h{$key} eq '';
-			for my $group (@deep) {
-				push @{ $exp_groups{ $group } }, $key;
-				$constants{$key} = $h{$key};
-			}
-		} elsif ( ref $h{$key} eq 'HASH' ) {
-			if( %{ $h{$key} } ) {
-				push @deep, $key;
-				hash_parser($h{$key}, @deep);
-				pop @deep;
-			} else { 
-				die; 
-			}
-		} else {
-			die;
-		}
-	}
 }
 
 1;
