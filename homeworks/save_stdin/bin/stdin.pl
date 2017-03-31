@@ -30,17 +30,6 @@ sub catch_int {
 	print STDERR "Double Ctrl+C for exit";
 };
 
-sub catch_d {
-	# if ($twist_flag2 == 1) {
-	# 	print_params();
-	# 	exit;
-	# }
-	# $twist_flag2++;
-	# print STDERR "Double Ctrl+D for exit";
-	print_params();
-	exit;
-};
-
 sub print_params {
 	my $avg = $sum / $count;
 	print STDOUT $sum." ".$count." ".$avg;
@@ -48,12 +37,8 @@ sub print_params {
 }
 
 select $fh;
-while (1) {
-	my $line = <STDIN>;
-	unless (defined $line) {
-		catch_d;
-	}
-
+while (<STDIN>) {
+	my $line = $_;
 	$twist_flag = 0;
 	print $line;
 	chomp $line;
@@ -61,4 +46,4 @@ while (1) {
 	$count++;
 }
 
-# print_params();
+print_params();
