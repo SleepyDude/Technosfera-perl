@@ -181,9 +181,12 @@ PERL_ARCHIVE       =
 PERL_ARCHIVE_AFTER = 
 
 
-TO_INST_PM = lib/VFS.pm
+TO_INST_PM = dumper/.exists \
+	lib/VFS.pm
 
-PM_TO_BLIB = lib/VFS.pm \
+PM_TO_BLIB = dumper/.exists \
+	$(INST_LIB)/dumper/.exists \
+	lib/VFS.pm \
 	blib/lib/VFS.pm
 
 
@@ -434,22 +437,22 @@ clean_subdirs :
 
 clean :: clean_subdirs
 	- $(RM_F) \
-	  perl$(EXE_EXT) pm_to_blib.ts \
-	  MYMETA.json core.[0-9][0-9] \
-	  lib$(BASEEXT).def $(MAKE_APERL_FILE) \
-	  core.[0-9][0-9][0-9][0-9][0-9] core \
-	  perl $(BASEEXT).x \
-	  *$(LIB_EXT) *$(OBJ_EXT) \
-	  MYMETA.yml core.[0-9][0-9][0-9][0-9] \
-	  $(INST_ARCHAUTODIR)/extralibs.all blibdirs.ts \
-	  perl.exe $(BOOTSTRAP) \
-	  mon.out pm_to_blib \
-	  $(INST_ARCHAUTODIR)/extralibs.ld $(BASEEXT).def \
-	  core.[0-9][0-9][0-9] $(BASEEXT).exp \
-	  so_locations core.[0-9] \
-	  core.*perl.*.? *perl.core \
-	  tmon.out perlmain.c \
-	  $(BASEEXT).bso 
+	  $(BASEEXT).bso $(BASEEXT).exp \
+	  $(BASEEXT).def pm_to_blib \
+	  core.[0-9] MYMETA.yml \
+	  $(MAKE_APERL_FILE) $(INST_ARCHAUTODIR)/extralibs.all \
+	  core.[0-9][0-9][0-9][0-9] tmon.out \
+	  *perl.core core.[0-9][0-9] \
+	  $(BASEEXT).x $(INST_ARCHAUTODIR)/extralibs.ld \
+	  core.*perl.*.? so_locations \
+	  core.[0-9][0-9][0-9] MYMETA.json \
+	  *$(LIB_EXT) $(BOOTSTRAP) \
+	  blibdirs.ts pm_to_blib.ts \
+	  core mon.out \
+	  *$(OBJ_EXT) perlmain.c \
+	  lib$(BASEEXT).def perl.exe \
+	  perl perl$(EXE_EXT) \
+	  core.[0-9][0-9][0-9][0-9][0-9] 
 	- $(RM_RF) \
 	  blib 
 	- $(MV) $(FIRST_MAKEFILE) $(MAKEFILE_OLD) $(DEV_NULL)
@@ -464,7 +467,7 @@ realclean_subdirs :
 # Delete temporary files (via clean) and also delete dist files
 realclean purge ::  clean realclean_subdirs
 	- $(RM_F) \
-	  $(MAKEFILE_OLD) $(FIRST_MAKEFILE) 
+	  $(FIRST_MAKEFILE) $(MAKEFILE_OLD) 
 	- $(RM_RF) \
 	  $(DISTVNAME) 
 
@@ -819,6 +822,7 @@ ppd :
 
 pm_to_blib : $(FIRST_MAKEFILE) $(TO_INST_PM)
 	$(NOECHO) $(ABSPERLRUN) -MExtUtils::Install -e 'pm_to_blib({@ARGV}, '\''$(INST_LIB)/auto'\'', q[$(PM_FILTER)], '\''$(PERM_DIR)'\'')' -- \
+	  dumper/.exists $(INST_LIB)/dumper/.exists \
 	  lib/VFS.pm blib/lib/VFS.pm 
 	$(NOECHO) $(TOUCH) pm_to_blib
 

@@ -1,5 +1,4 @@
 package VFS;
-# use utf8;
 use strict;
 use warnings;
 use 5.010;
@@ -13,88 +12,85 @@ use Encode qw(decode encode);
 
 sub mode2s {
 	my $rights = shift;
-	my %mode;
-	$mode{other}{execute} = (0b00000001 & $rights) == 1 ? JSON::XS::true : JSON::XS::false;
-	$mode{other}{write} = (0b00000010 & $rights) == 2 ? JSON::XS::true : JSON::XS::false;
-	$mode{other}{read} = (0b00000100 & $rights) == 4 ? JSON::XS::true : JSON::XS::false;
-	$mode{group}{execute} = (0b00001000 & $rights) == 8 ? JSON::XS::true : JSON::XS::false;
-	$mode{group}{write} = (0b00010000 & $rights) == 16 ? JSON::XS::true : JSON::XS::false;
-	$mode{group}{read} = (0b00100000 & $rights) == 32 ? JSON::XS::true : JSON::XS::false;
-	$mode{user}{execute} = (0b01000000 & $rights) == 64 ? JSON::XS::true : JSON::XS::false;
-	$mode{user}{write} = (0b10000000 & $rights) == 128 ? JSON::XS::true : JSON::XS::false;
-	$mode{user}{read} = (0b100000000 & $rights) == 256 ? JSON::XS::true : JSON::XS::false;
-	return \%mode;
+	return {
+		other => {
+			execute => $rights & 1 ? JSON::XS::true : JSON::XS::false,
+			write => $rights & 2 ? JSON::XS::true : JSON::XS::false,
+			read => $rights & 4 ? JSON::XS::true : JSON::XS::false,
+		},
+		group => {
+			execute => $rights & 8 ? JSON::XS::true : JSON::XS::false,
+			write => $rights & 16 ? JSON::XS::true : JSON::XS::false,
+			read => $rights & 32 ? JSON::XS::true : JSON::XS::false,
+		},
+		user => {
+			execute => $rights & 64 ? JSON::XS::true : JSON::XS::false,
+			write => $rights & 128 ? JSON::XS::true : JSON::XS::false,
+			read => $rights & 256 ? JSON::XS::true : JSON::XS::false,
+		}
+	}
 }
 
-our @chars;
+our $buf;
 
 sub parse {
-	my $buf = shift;
-	@chars = split //,$buf;
+	$buf = shift;
 	my $tree;
-	if ($chars[0] eq 'Z') {
+
+	my $char = unpack "A", $buf;
+
+	if ($char eq 'Z') {
 		return {};
 	}
-	if ($chars[0] ne 'Z' and $chars[0] ne 'D') {
+	if ($char ne 'Z' and $char ne 'D') {
 		die("The blob should start from 'D' or 'Z'");
 	}
 	$tree = _create_list();
 	return $tree->[0];
 }
 
-sub _create_directory {
-	my %dir;
-	my $len_byte = 2;
-	my $right_byte = 2;
-	$dir{type} = "directory";
-	my $name_len = unpack "n", join '', @chars[0..$len_byte - 1];
-	my $name = join '', @chars[$len_byte..$name_len + $len_byte - 1];
-	$dir{name} = decode('utf-8', $name);
-	my $rights = unpack "n", join '', @chars[$name_len + $len_byte..$name_len + $len_byte + $right_byte - 1];
-	$dir{mode} = mode2s($rights);
-
-	@chars = @chars[$name_len + $len_byte + $right_byte..$#chars];
-	return \%dir;
-}
-
-sub _create_file {
-	my %file;
+sub _create_hash {
+	my $flag = shift;
+	my %h;
 	my $len_byte = 2;
 	my $right_byte = 2;
 	my $size_byte = 4;
 	my $sha1_byte = 20;
-	$file{type} = "file";
-	my $name_len = unpack "n", join '', @chars[0..$len_byte - 1];
-	my $name = join '', @chars[$len_byte..$name_len + $len_byte - 1];
-	$file{name} = decode('utf-8', $name);
-	my $rights = unpack "n", join '', @chars[$name_len + $len_byte..$name_len + $len_byte + $right_byte - 1];
-	$file{mode} = mode2s($rights);
-	my $size = unpack "N", 
-				join '', @chars[$name_len + $len_byte + $right_byte..
-								$name_len + $len_byte + $right_byte + $size_byte - 1];
-	$file{size} = $size;
-	my $hash = join '', @chars[$name_len + $len_byte + $right_byte + $size_byte..
-								$name_len + $len_byte + $right_byte + $size_byte + $sha1_byte - 1];
-	$file{hash} = unpack 'H*', $hash;
 
-	@chars = @chars[$name_len + $len_byte + $right_byte + $size_byte + $sha1_byte..$#chars];
-	return \%file;
+	my $name_len = unpack "n", $buf;
+	my ($name, $rights) = unpack "x$len_byte A$name_len n", $buf;
+	$h{name} = decode('utf-8', $name);
+	$h{mode} = mode2s($rights);
+
+	if ($flag eq "F") {
+		my ($size, $hash) = unpack "x$len_byte x$name_len x$right_byte N A$sha1_byte", $buf;
+		$buf = substr $buf, $len_byte + $name_len + $right_byte + $size_byte + $sha1_byte;
+		$h{type} = "file";
+		$h{size} = $size;
+		$h{hash} = unpack "H*", $hash;
+	} elsif ($flag eq "D") {
+		$buf = substr $buf, $right_byte + $len_byte + $name_len;
+		$h{type} = "directory";
+	}
+
+	return \%h;
 }
 
 sub _create_list {
 	my @list;
-	while (scalar @chars) {
-		my $command = shift @chars;
+	while ($buf) {
+		my $command = unpack "A", $buf;
+		$buf = substr $buf, 1;
 		if ($command eq 'D'){
-			push @list, _create_directory();
+			push @list, _create_hash('D');
 		} elsif ($command eq 'F') {
-			push @list, _create_file();
+			push @list, _create_hash('F');
 		} elsif ($command eq 'I') {
 			$list[-1]->{list} = _create_list();
 		} elsif ($command eq 'U') {
 			return \@list;
 		} elsif ($command eq 'Z') {
-			die("Garbage ae the end of the buffer") if (scalar @chars);
+			die("Garbage ae the end of the buffer") if ($buf);
 			return \@list;
 		}
 	}
