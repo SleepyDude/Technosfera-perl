@@ -4,9 +4,6 @@ use strict;
 use warnings;
 use Getopt::Long;
 
-
-print "Get ready\n";
-
 my $filename;
 
 GetOptions("file=s" => \$filename);
@@ -14,12 +11,12 @@ GetOptions("file=s" => \$filename);
 die if !defined $filename;
 open(my $fh, '>', $filename) or die $!;
 
-$SIG{INT} = \&catch_int;
-
 my $twist_flag = 0;
 
 my $sum = 0;
 my $count = 0;
+
+$SIG{INT} = \&catch_int;
 
 sub catch_int {
 	if ($twist_flag == 1) {
@@ -30,8 +27,15 @@ sub catch_int {
 	print STDERR "Double Ctrl+C for exit";
 };
 
+print "Get ready\n";
+
 sub print_params {
-	my $avg = $sum / $count;
+	my $avg;
+	if ($count != 0) {
+		$avg = 0;
+	} else {
+		$avg = $sum / $count;
+	} 
 	print STDOUT $sum." ".$count." ".$avg;
 	close($fh);
 }
