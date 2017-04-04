@@ -49,30 +49,25 @@ sub parse {
 	return $tree->[0];
 }
 
-sub _create_hash {
+sub _create_file {
 	my $flag = shift;
 	my %h;
-	my $len_byte = 2;
-	my $right_byte = 2;
-	my $size_byte = 4;
-	my $sha1_byte = 20;
-
-	my $name_len = unpack "n", $buf;
-	my ($name, $rights) = unpack "x$len_byte A$name_len n", $buf;
+	(my $name, my $rights, my $size, my $hash, $buf) = unpack "n/A* n N A20 A*", $buf;
 	$h{name} = decode('utf-8', $name);
 	$h{mode} = mode2s($rights);
+	$h{type} = "file";
+	$h{size} = $size;
+	$h{hash} = unpack "H*", $hash;
+	return \%h;
+}
 
-	if ($flag eq "F") {
-		my ($size, $hash) = unpack "x$len_byte x$name_len x$right_byte N A$sha1_byte", $buf;
-		$buf = substr $buf, $len_byte + $name_len + $right_byte + $size_byte + $sha1_byte;
-		$h{type} = "file";
-		$h{size} = $size;
-		$h{hash} = unpack "H*", $hash;
-	} elsif ($flag eq "D") {
-		$buf = substr $buf, $right_byte + $len_byte + $name_len;
-		$h{type} = "directory";
-	}
-
+sub _create_directory {
+	my $flag = shift;
+	my %h;
+	(my $name, my $rights, $buf) = unpack "n/A* n A*", $buf;
+	$h{name} = decode('utf-8', $name);
+	$h{mode} = mode2s($rights);
+	$h{type} = "directory";
 	return \%h;
 }
 
@@ -82,9 +77,9 @@ sub _create_list {
 		my $command = unpack "A", $buf;
 		$buf = substr $buf, 1;
 		if ($command eq 'D'){
-			push @list, _create_hash('D');
+			push @list, _create_directory();
 		} elsif ($command eq 'F') {
-			push @list, _create_hash('F');
+			push @list, _create_file();
 		} elsif ($command eq 'I') {
 			$list[-1]->{list} = _create_list();
 		} elsif ($command eq 'U') {
