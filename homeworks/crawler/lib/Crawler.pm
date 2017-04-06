@@ -46,10 +46,13 @@ sub run {
     $start_page or die "You must setup url parameter";
     $parallel_factor or die "You must setup parallel factor > 0";
 
+    $AnyEvent::HTTP::MAX_PER_HOST = $parallel_factor;
+
     my $total_size = 0;
     my @top10_list;
     
     push @urls, $start_page;
+    my $quoted_start_page = quotemeta($start_page);
 
     my $counter = 0;
     my @new_urls;
@@ -59,7 +62,6 @@ sub run {
 	my $next; $next = sub {
 		my $url = shift @urls;
 		return if not $url;
-		# say "DOWNLOAD <$url>";
 		$cv->begin;
 		http_head $url, sub {
 			my ($body, $hdr) = @_;
@@ -69,23 +71,19 @@ sub run {
 				$cv->begin;
 				http_get $url, sub {
 					my ($body, $hdr) = @_;
-					$hrefs_text{$url} = length $body;
+					die("Fail $url: @$hdr{qw(Status Reason)}") if ($hdr->{Status} != 200);
+					$hrefs_text{$url} = $hdr->{"content-length"};
 					wq($body)
 						->find('a')
 						->each(sub {
 							my $i = shift;
 							my $href = $_->attr('href');
-							my $first_s = unpack "A", $href;
-							if ($first_s ne "#") {
-								my $new_abs = URI->new_abs($href, $start_page)->canonical;
-								# say $new_abs if $new_abs =~ $start_page;
-								if (!exists $hrefs{$new_abs}) {
-									# say "SEE URL $url";
-									$hrefs{$new_abs} = 1;
-									push @urls, $new_abs if $new_abs =~ $start_page;
-									# say "@urls";
-									# say $new_abs;
-								}
+							$href =~ /^(.*?)(?:#|$)/;
+							$href = $1;
+							my $new_abs = URI->new_abs($href, $start_page)->canonical;
+							if (!exists $hrefs{$new_abs}) {
+								$hrefs{$new_abs} = 1;
+								push @urls, $new_abs if $new_abs =~ $quoted_start_page;
 							}
 						});
 					$next->();
