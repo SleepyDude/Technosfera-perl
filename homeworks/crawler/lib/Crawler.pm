@@ -46,7 +46,7 @@ sub run {
     $start_page or die "You must setup url parameter";
     $parallel_factor or die "You must setup parallel factor > 0";
 
-    $AnyEvent::HTTP::MAX_PER_HOST = $parallel_factor;
+    local $AnyEvent::HTTP::MAX_PER_HOST = $parallel_factor;
 
     my $total_size = 0;
     my @top10_list;
