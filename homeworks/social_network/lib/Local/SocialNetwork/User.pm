@@ -1,4 +1,4 @@
-package Local::User;
+package Local::SocialNetwork::User;
 
 use strict;
 use warnings;
@@ -16,17 +16,6 @@ has first_name  => (is => 'ro', isa => 'Str', required => 1);
 has last_name => (is => 'ro', isa => 'Str', required => 1);
 has friends => (is => 'ro', required => 0);
 
-
-
-# sub new {
-# 	my ($pkg, %params) = @_;
-# 	my $self = bless {}, $pkg;
-# 	# $self->{id} = $params{id};
-# 	# $self->{first_name} = $params{first_name};
-# 	# $self->{last_name} = $params{last_name};
-# 	# $self->{friends} = $params{friends};
-# }
-
 sub get_by_id {
 	my $self = shift;
 	my $id = shift;
@@ -43,18 +32,33 @@ sub get_by_id {
 	$sth->execute($id);
 	my $friends = $sth->fetchall_hashref('user_id_2');
 	my @fr = keys %{ $friends };
-	# print Dumper($friends);
 	$dbh->disconnect();
-	# $self->{id} = $id;
-	# $self->{first_name} = $usr->{firstname};
-	# $self->{last_name} = $usr->{lastname};
-	# $self->{friends} = \@fr;
 	return $self->new(
         id   => $id,
         first_name  => $usr->{firstname},
         last_name => $usr->{lastname},
         friends => \@fr,
     );
+}
+
+sub get_friends {
+	my $self = shift;
+
+	return $self->{friends};
+}
+
+sub get_full_name {
+	my $self = shift;
+
+	return $self->{first_name} . " " . $self->{last_name};
+}
+
+sub get {
+	my $self = shift;
+	my $h;
+	$h->{id} = $self->{id};
+	$h->{full_name} = $self->get_full_name();
+	return $h;
 }
 
 our @EXPORT = qw(get_by_id);
