@@ -19,17 +19,21 @@ sub parse_users {
 		push @arr, $num||'', $first||'', $last||'';
 		$counter++;
 		if ($counter % $chunk == 0) {
-			$sth = $db->prepare("REPLACE INTO users (id, firstname, lastname) VALUES" .  ' (?, ?, ?),'x($chunk-1) . ' (?, ?, ?)');
-	    	$sth->execute(@arr);
-	    	@arr = ();
-		}
+            $sth = $db->prepare(
+                "REPLACE INTO users (id, firstname, lastname) VALUES" .  ' (?, ?, ?),'x($chunk-1) . ' (?, ?, ?)'
+            );
+            $sth->execute(@arr);
+            @arr = ();
+        }
 	}
 	my $rem = $counter % $chunk;
 	if ($rem) {
-		$sth = $db->prepare("REPLACE INTO users (id, firstname, lastname) VALUES" .  ' (?, ?, ?),'x($rem-1) . ' (?, ?, ?)');
-	    $sth->execute(@arr);
+        $sth = $db->prepare(
+            "REPLACE INTO users (id, firstname, lastname) VALUES" .  ' (?, ?, ?),'x($rem-1) . ' (?, ?, ?)'
+        );
+        $sth->execute(@arr);
 	}
-	$db->commit;
+    $db->commit;
 }
 
 sub parse_relations {
@@ -46,7 +50,9 @@ sub parse_relations {
         my ($user_id_1, $user_id_2) = split /\s+/, $line;
         push @arr, $user_id_1||-1, $user_id_2||-1;
         if($counter % $chunk == 0) {
-            my $sth1=$dbh->prepare('REPLACE INTO relations (user_id_1, user_id_2) VALUES' . ' (?, ?),'x($chunk - 1) . ' (?, ?)');
+            my $sth1=$dbh->prepare(
+                'REPLACE INTO relations (user_id_1, user_id_2) VALUES' . ' (?, ?),'x($chunk - 1) . ' (?, ?)'
+            );
             $sth1->execute(@arr);
             $dbh->commit;
             my $sth2=$dbh->prepare('REPLACE INTO relations (user_id_2, user_id_1) VALUES' . ' (?, ?),'x(scalar $chunk - 1) . ' (?, ?)');
@@ -57,10 +63,14 @@ sub parse_relations {
         }
     }
     if (scalar @arr) {
-        my $sth1=$dbh->prepare('REPLACE INTO relations (user_id_1, user_id_2) VALUES' . ' (?, ?),'x((scalar @arr)/2 - 1) . ' (?, ?)');
+        my $sth1=$dbh->prepare(
+            'REPLACE INTO relations (user_id_1, user_id_2) VALUES' . ' (?, ?),'x((scalar @arr)/2 - 1) . ' (?, ?)'
+        );
         $sth1->execute(@arr);
         $dbh->commit;
-        my $sth2=$dbh->prepare('REPLACE INTO relations (user_id_2, user_id_1) VALUES' . ' (?, ?),'x((scalar @arr)/2 - 1) . ' (?, ?)');
+        my $sth2=$dbh->prepare(
+            'REPLACE INTO relations (user_id_2, user_id_1) VALUES' . ' (?, ?),'x((scalar @arr)/2 - 1) . ' (?, ?)'
+        );
         $sth2->execute(@arr);
         $dbh->commit;
         @arr = ();
