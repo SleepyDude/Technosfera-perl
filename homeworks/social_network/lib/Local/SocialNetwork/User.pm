@@ -20,24 +20,24 @@ sub get_by_id {
 	my $id = shift;
 	my $dbh = Local::DBconnector->get();
 	my $sth = $dbh->prepare(
-        'SELECT * FROM users WHERE id = ?'
-    );
-    $sth->execute($id);
-    my $usr = $sth->fetchrow_hashref();
+		'SELECT * FROM users WHERE id = ?'
+	);
+	$sth->execute($id);
+	my $usr = $sth->fetchrow_hashref();
 
-    $sth = $dbh->prepare(
-    	'SELECT * FROM relations WHERE user_id_1 = ?'
-    );
+	$sth = $dbh->prepare(
+		'SELECT * FROM relations WHERE user_id_1 = ?'
+	);
 	$sth->execute($id);
 	my $friends = $sth->fetchall_hashref('user_id_2');
 	my @fr = keys %{ $friends };
 	$dbh->disconnect();
 	return $self->new(
-        id => $id,
-        first_name => $usr->{firstname},
-        last_name => $usr->{lastname},
-        friends => \@fr,
-    );
+		id => $id,
+		first_name => $usr->{firstname},
+		last_name => $usr->{lastname},
+		friends => \@fr,
+	);
 }
 
 sub get_friends {
@@ -63,12 +63,12 @@ sub get_loners {
 
 	my $dbh = Local::DBconnector->get();
 	my $sth = $dbh->prepare(
-        'SELECT * FROM users WHERE id NOT IN (SELECT user_id_1 FROM relations)'
-    );
-    $sth->execute();
-    my $loners = $sth->fetchall_hashref('id') || '';
-    $dbh->disconnect();
-    return $loners;
+		'SELECT * FROM users WHERE id NOT IN (SELECT user_id_1 FROM relations)'
+	);
+	$sth->execute();
+	my $loners = $sth->fetchall_hashref('id') || '';
+	$dbh->disconnect();
+	return $loners;
 }
 
 sub get_friends_by_list {

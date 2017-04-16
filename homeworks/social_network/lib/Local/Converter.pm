@@ -38,7 +38,7 @@ sub parse_relations {
     my $counter;
     warn "read from zip\n";
     my $relations_data = new IO::Uncompress::Unzip "$FindBin::Bin/../etc/user_relation.zip"
-    or die "unzip failed\n";
+        or die "unzip failed\n";
     my @arr;
     warn "start inserting to relations\n";
     while(my $line = $relations_data->getline) {
