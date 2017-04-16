@@ -10,8 +10,8 @@ use Data::Dumper;
 use feature qw(say);
 use Mouse;
 
-has id   => (is => 'ro', isa => 'Num', required => 1);
-has first_name  => (is => 'ro', isa => 'Str', required => 1);
+has id => (is => 'ro', isa => 'Num', required => 1);
+has first_name => (is => 'ro', isa => 'Str', required => 1);
 has last_name => (is => 'ro', isa => 'Str', required => 1);
 has friends => (is => 'ro', required => 0);
 
@@ -80,7 +80,9 @@ sub get_friends_by_list {
 
 	foreach (@list) {
 		my $id = $_;
-		my $sth = $dbh->prepare('SELECT user_id_2 FROM relations WHERE user_id_1 = ?');
+		my $sth = $dbh->prepare(
+			'SELECT user_id_2 FROM relations WHERE user_id_1 = ?'
+		);
 	    $sth->execute($id);
 	    my @res = map { $_->[0] } @{ $sth->fetchall_arrayref() };
 	    foreach (@res) {
