@@ -30,11 +30,6 @@ if ($command eq 'friends') {
 	die(wrong_com());
 }
 
-
-
-# my $user = Local::User->get_by_id(7);
-# p $user;
-
 sub wrong_com {
 	say "Supported commands:";
 	say "`friends --user XX --user YY` | Common friends list users with id XX and YY";
