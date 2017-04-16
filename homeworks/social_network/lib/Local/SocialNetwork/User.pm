@@ -8,7 +8,6 @@ use utf8;
 use DDP;
 use Data::Dumper;
 use feature qw(say);
-use Exporter 'import';
 use Mouse;
 
 has id   => (is => 'ro', isa => 'Num', required => 1);
@@ -34,8 +33,8 @@ sub get_by_id {
 	my @fr = keys %{ $friends };
 	$dbh->disconnect();
 	return $self->new(
-        id   => $id,
-        first_name  => $usr->{firstname},
+        id => $id,
+        first_name => $usr->{firstname},
         last_name => $usr->{lastname},
         friends => \@fr,
     );
@@ -43,13 +42,11 @@ sub get_by_id {
 
 sub get_friends {
 	my $self = shift;
-
 	return $self->{friends};
 }
 
 sub get_full_name {
 	my $self = shift;
-
 	return $self->{first_name} . " " . $self->{last_name};
 }
 
@@ -61,6 +58,41 @@ sub get {
 	return $h;
 }
 
-our @EXPORT = qw(get_by_id);
+sub get_loners {
+	my $pkg = shift;
+
+	my $dbh = Local::DBconnector->get();
+	my $sth = $dbh->prepare(
+        'SELECT * FROM users WHERE id NOT IN (SELECT user_id_1 FROM relations)'
+    );
+    $sth->execute();
+    my $loners = $sth->fetchall_hashref('id') || '';
+    $dbh->disconnect();
+    return $loners;
+}
+
+sub get_friends_by_list {
+	my $pkg = shift;
+	my $id_YY = shift;
+	my @list = @_;
+	my %h;
+	my $dbh = Local::DBconnector->get();
+
+	foreach (@list) {
+		my $id = $_;
+		my $sth = $dbh->prepare('SELECT user_id_2 FROM relations WHERE user_id_1 = ?');
+	    $sth->execute($id);
+	    my @res = map { $_->[0] } @{ $sth->fetchall_arrayref() };
+	    foreach (@res) {
+	    	$h{$_} = 1;
+	    	if ($id_YY == $_) {
+	    		$dbh->disconnect();
+	    		return [ keys %h ];
+	    	}
+	    }
+	}
+    $dbh->disconnect();
+    return [ keys %h ];
+}
 
 1;

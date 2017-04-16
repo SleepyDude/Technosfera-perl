@@ -22,9 +22,10 @@ if ($command eq 'friends') {
 	friends_responce(@users);
 } elsif ($command eq 'nofriends') {
 	die(wrong_com()) if scalar @users != 0;
-	# nofriends_responce();
+	loners_responce();
 } elsif ($command eq 'num_handshakes') {
 	die(wrong_com()) if scalar @users != 2;
+	handshakes_responce(@users);
 } else {
 	die(wrong_com());
 }
