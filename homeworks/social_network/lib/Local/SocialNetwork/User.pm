@@ -18,20 +18,14 @@ has friends => (is => 'ro', required => 0);
 sub get_by_id {
 	my $self = shift;
 	my $id = shift;
-	my $dbh = Local::DBconnector->get();
+	my $dbh = Local::DBconnector->instance();
 	my $sth = $dbh->prepare(
-		'SELECT * FROM users WHERE id = ?'
+		'SELECT users.id, users.firstname, users.lastname, relations.user_id_2 from users INNER JOIN 
+		relations ON users.id = relations.user_id_1 WHERE id = ?'
 	);
 	$sth->execute($id);
 	my $usr = $sth->fetchrow_hashref();
-
-	$sth = $dbh->prepare(
-		'SELECT * FROM relations WHERE user_id_1 = ?'
-	);
-	$sth->execute($id);
-	my $friends = $sth->fetchall_hashref('user_id_2');
-	my @fr = keys %{ $friends };
-	$dbh->disconnect();
+	my @fr = map { $_->[3] } @{ $sth->fetchall_arrayref() };
 	return $self->new(
 		id => $id,
 		first_name => $usr->{firstname},
@@ -61,13 +55,12 @@ sub get {
 sub get_loners {
 	my $pkg = shift;
 
-	my $dbh = Local::DBconnector->get();
+	my $dbh = Local::DBconnector->instance();
 	my $sth = $dbh->prepare(
 		'SELECT * FROM users WHERE id NOT IN (SELECT user_id_1 FROM relations)'
 	);
 	$sth->execute();
 	my $loners = $sth->fetchall_hashref('id') || '';
-	$dbh->disconnect();
 	return $loners;
 }
 
@@ -76,25 +69,34 @@ sub get_friends_by_list {
 	my $id_YY = shift;
 	my @list = @_;
 	my %h;
-	my $dbh = Local::DBconnector->get();
+	my $chunk_num = 1000;
+	my @chunks = group_by ($chunk_num, @list);
+	my $dbh = Local::DBconnector->instance();
 
-	foreach (@list) {
-		my $id = $_;
+	foreach (@chunks) {
+		my @chunk = @{ $_ };
 		my $sth = $dbh->prepare(
-			'SELECT user_id_2 FROM relations WHERE user_id_1 = ?'
+			'SELECT * FROM users INNER JOIN relations ON users.id = relations.user_id_1 WHERE user_id_1 = ?' .
+			' OR user_id_1 = ?'x(scalar @chunk - 1)
 		);
-	    $sth->execute($id);
-	    my @res = map { $_->[0] } @{ $sth->fetchall_arrayref() };
+	    $sth->execute(@chunk);
+	    my @res = map { $_->[4] } @{ $sth->fetchall_arrayref() };
 	    foreach (@res) {
 	    	$h{$_} = 1;
-	    	if ($id_YY == $_) {
-	    		$dbh->disconnect();
-	    		return [ keys %h ];
-	    	}
+	    	return [ keys %h ] if $id_YY == $_;
 	    }
 	}
-    $dbh->disconnect();
     return [ keys %h ];
+}
+
+sub group_by {
+	my $n = shift;
+	my @array = @_;
+
+	my @groups;
+	push @groups, [ splice @array, 0, $n ] while @array;
+
+	return @groups;
 }
 
 1;

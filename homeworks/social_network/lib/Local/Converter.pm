@@ -40,11 +40,9 @@ sub parse_relations {
     my $dbh = shift;
     my $chunk = 100000;
     my $counter;
-    warn "read from zip\n";
     my $relations_data = new IO::Uncompress::Unzip "$FindBin::Bin/../etc/user_relation.zip"
         or die "unzip failed\n";
     my @arr;
-    warn "start inserting to relations\n";
     while(my $line = $relations_data->getline) {
         $counter++;
         my ($user_id_1, $user_id_2) = split /\s+/, $line;
@@ -59,7 +57,6 @@ sub parse_relations {
             $sth2->execute(@arr);
             $dbh->commit;
             @arr = ();
-            warn "$counter relations inserted";
         }
     }
     if (scalar @arr) {
@@ -74,9 +71,7 @@ sub parse_relations {
         $sth2->execute(@arr);
         $dbh->commit;
         @arr = ();
-        warn "$counter relations inserted";
     }
-    warn "stop inserting to relations\n";
 }
 
 our @EXPORT = qw(parse_users parse_relations);

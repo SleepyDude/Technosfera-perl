@@ -5,7 +5,7 @@ use lib "$FindBin::Bin/../lib";
 use Local::Converter;
 use Local::DBconnector;
 
-my $dbh = Local::DBconnector->get();
+my $dbh = Local::DBconnector->instance();
 
 parse_users($dbh);
 parse_relations($dbh);

@@ -20,17 +20,11 @@ sub _new_instance {
 		<$json_fh>
 	};
 	my $conf_ref = JSON::XS->new->utf8->decode ($config_text);
-
     
     $self->{ DB } = DBI->connect(@$conf_ref)
         || die "Cannot connect to database: $DBI::errstr";
 
-    return $self;
-}
-
-sub get {
-	my $self = shift;
-	return $self->_new_instance()->{ DB };
+    return $self->{ DB };
 }
 
 1;

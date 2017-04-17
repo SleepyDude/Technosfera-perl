@@ -2,8 +2,6 @@ package Local::SocialNetwork;
 
 use strict;
 use warnings;
-use IO::Uncompress::Unzip qw(unzip $UnzipError);
-use FindBin;
 use Exporter 'import';
 use Local::SocialNetwork::User;
 use DDP;
@@ -46,18 +44,12 @@ sub friends_responce {
         my $user = Local::SocialNetwork::User->get_by_id($user_id);
         push @u, $user->get();
     }
-    my $json = JSON::XS->new->utf8->pretty(1)->encode(\@u);
-
-    print $json;
-    file_print($json);
+    return \@u;
 }
 
 sub loners_responce {
     my $loners = Local::SocialNetwork::User->get_loners();
-    my $json = JSON::XS->new->utf8->pretty(1)->encode($loners);
-
-    print $json;
-    file_print($json);
+    return $loners;
 }
 
 sub handshakes_responce {
@@ -75,18 +67,7 @@ sub handshakes_responce {
         }
         $handshakes++;
     }
-
-    my $json = JSON::XS->new->utf8->pretty(1)->encode({ "num_handshakes" => $handshakes });
-    print $json;
-    file_print($json);
-}
-
-sub file_print {
-    my $json = shift;
-    open(my $fh, ">", "output.txt")
-        or die "Can't open > output.txt: $!";
-    print $fh $json;
-    close $fh;
+    return { "num_handshakes" => $handshakes };
 }
 
 our @EXPORT = qw(friends_responce loners_responce handshakes_responce);

@@ -1,3 +1,0 @@
-{
-   "num_handshakes" : 2
-}
