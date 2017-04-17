@@ -18,7 +18,7 @@ has friends => (is => 'ro', required => 0);
 sub get_by_id {
 	my $self = shift;
 	my $id = shift;
-	my $dbh = Local::DBconnector->instance();
+	my $dbh = Local::DBconnector->instance()->{ DB };
 	my $sth = $dbh->prepare(
 		'SELECT users.id, users.firstname, users.lastname, relations.user_id_2 from users INNER JOIN 
 		relations ON users.id = relations.user_id_1 WHERE id = ?'
@@ -55,7 +55,7 @@ sub get {
 sub get_loners {
 	my $pkg = shift;
 
-	my $dbh = Local::DBconnector->instance();
+	my $dbh = Local::DBconnector->instance()->{ DB };
 	my $sth = $dbh->prepare(
 		'SELECT * FROM users WHERE id NOT IN (SELECT user_id_1 FROM relations)'
 	);
@@ -71,8 +71,7 @@ sub get_friends_by_list {
 	my %h;
 	my $chunk_num = 1000;
 	my @chunks = group_by ($chunk_num, @list);
-	my $dbh = Local::DBconnector->instance();
-
+	my $dbh = Local::DBconnector->instance()->{ DB };
 	foreach (@chunks) {
 		my @chunk = @{ $_ };
 		my $sth = $dbh->prepare(
@@ -102,7 +101,7 @@ sub group_by {
 sub has_friends {
 	my $pkg = shift;
 	my $id = shift;
-	my $dbh = Local::DBconnector->instance();
+	my $dbh = Local::DBconnector->instance()->{ DB };
 	my $sth = $dbh->prepare(
 		'SELECT relations.user_id_2 FROM relations WHERE user_id_1 = ?'
 	);

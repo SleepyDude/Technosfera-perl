@@ -60,7 +60,6 @@ sub handshakes_responce {
         Local::DBconnector->instance()->disconnect();
         die("Someone have no friends :(");
     }
-
     my $handshakes = 0;
     my %selected_h = ($id_XX => 1);
     my $i = 0;

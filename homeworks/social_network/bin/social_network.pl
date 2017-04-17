@@ -30,8 +30,6 @@ if ($command eq 'friends') {
 	die(wrong_com());
 }
 
-Local::DBconnector->instance()->disconnect();
-
 sub wrong_com {
 	say "Supported commands:";
 	say "`friends --user XX --user YY` | Common friends list users with id XX and YY";
