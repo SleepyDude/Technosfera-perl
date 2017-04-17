@@ -56,6 +56,11 @@ sub handshakes_responce {
     my $id_XX = shift;
     my $id_YY = shift;
 
+    if (! Local::SocialNetwork::User->has_friends($id_XX) or ! Local::SocialNetwork::User->has_friends($id_YY)) {
+        Local::DBconnector->instance()->disconnect();
+        die("Someone have no friends :(");
+    }
+
     my $handshakes = 0;
     my %selected_h = ($id_XX => 1);
     my $i = 0;

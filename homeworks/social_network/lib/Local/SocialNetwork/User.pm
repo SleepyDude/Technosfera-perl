@@ -99,4 +99,17 @@ sub group_by {
 	return @groups;
 }
 
+sub has_friends {
+	my $pkg = shift;
+	my $id = shift;
+	my $dbh = Local::DBconnector->instance();
+	my $sth = $dbh->prepare(
+		'SELECT relations.user_id_2 FROM relations WHERE user_id_1 = ?'
+	);
+	$sth->execute($id);
+	my @fr = map { $_->[0] } @{ $sth->fetchall_arrayref() };
+	return 1 if scalar @fr;
+	return 0;
+}
+
 1;
