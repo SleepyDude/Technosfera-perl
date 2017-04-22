@@ -1,0 +1,9 @@
+% layout 'default';
+% title 'Welcome!';
+
+<div class="ex-block">
+    <div class="in-block">
+		<h2>Welcome <%= $name %>!</h2>
+		<p>Thanks for registration</p> 
+    </div>
+</div>

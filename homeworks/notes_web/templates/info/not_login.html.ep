@@ -1,0 +1,12 @@
+% layout 'default';
+% title 'Oops';
+
+<div class="ex-block">
+    <div class="in-block">
+		<h2>Oops</h2>
+		<p>You're not logged in.</p> 
+		<p>
+		%= link_to "Login here" => 'login'
+		</p>
+    </div>
+</div>

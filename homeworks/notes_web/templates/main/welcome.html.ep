@@ -1,0 +1,10 @@
+% layout 'default';
+% title 'Home';
+<div class="ex-block">
+	<div class="in-block">
+		<h2><p>Welcome to notes-app!</p></h2>
+		% if ( ! $self->session('logged_in') ) {
+			<h2><p>Sign in or sign up for more features</p></h2>
+		% }
+	</div>
+</div>

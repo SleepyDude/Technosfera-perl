@@ -1,0 +1,16 @@
+% layout 'default';
+% title 'Note creation';
+<div class="ex-block">
+	<div class="in-block">
+		%= form_for 'do_note' => (method => 'POST') => begin
+			<p><%= csrf_field%></p>
+		    <p><%= label_for title => 'Enter note title'%></p>
+		    <p><%= text_field 'title'%></p>
+		    <p>Enter note text</p>
+		    <p><textarea name="text"></textarea></p>
+		    <p>Enter users to share</p>
+		    <p><textarea name="users"></textarea></p>
+		    <p><%= submit_button 'Post note', class => 'button'%></p>
+		% end
+	</div>
+</div>

@@ -1,0 +1,10 @@
+[
+	"DBI:mysql:database=mojo;host=localhost:3151426",
+	"root",
+	"pass",
+	{
+		"RaiseError" : 1, 
+		"AutoCommit" : 0, 
+		"mysql_enable_utf8" : 1
+	}
+]

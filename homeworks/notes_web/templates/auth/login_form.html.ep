@@ -1,0 +1,16 @@
+% layout 'default';
+% title 'Auth';
+<div class="ex-block">
+	<div class="in-block">
+		%= form_for 'do_login' => (method => 'POST') => begin
+			<p><%= csrf_field%></p>
+		    <p><%= label_for username => 'Username'%></p>
+		    <p><%= text_field 'username'%></p>
+
+		    <p><%= label_for password => 'Password'%></p>
+		    <p><%= password_field 'password'%></p>
+
+		    <p><%= submit_button 'Sign in/Sign up', class => 'button'%></p>
+		% end
+	</div>
+</div>

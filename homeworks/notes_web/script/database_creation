@@ -1,0 +1,23 @@
+CREATE TABLE `notes` (
+  `id` INTEGER NULL AUTO_INCREMENT DEFAULT NULL,
+  `title` VARCHAR(200) NOT NULL DEFAULT 'Not title',
+  `text` MEDIUMTEXT NOT NULL,
+  `author` VARCHAR(30) NOT NULL DEFAULT 'NULL',
+  PRIMARY KEY (`id`)
+) CHARACTER SET=UTF8;
+
+CREATE TABLE `users` (
+  `id` INTEGER NULL AUTO_INCREMENT,
+  `username` VARCHAR(30) NOT NULL UNIQUE,
+  `passwd` VARCHAR(90) NOT NULL,
+  PRIMARY KEY (`id`)
+) CHARACTER SET=UTF8;
+
+CREATE TABLE `relations` (
+  `username` VARCHAR(30) NOT NULL,
+  `note_id` INTEGER NOT NULL,
+  PRIMARY KEY (`username`, `note_id`)
+) CHARACTER SET=UTF8;
+
+ALTER TABLE relations ADD FOREIGN KEY (username) REFERENCES users(username);
+ALTER TABLE relations ADD FOREIGN KEY (note_id) REFERENCES notes(id);

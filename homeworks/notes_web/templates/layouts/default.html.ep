@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title><%= title %></title>
+		<style>
+		.button {
+			background-color: rgba(25, 49, 38, 0.46);
+			border: none;
+			color: white;
+			padding: 15px 32px;
+			text-align: center;
+			text-decoration: none;
+			display: inline-block;
+			font-size: 16px;
+		}
+
+	    .ex-block {
+	    	padding-top: 48px!important;
+	    	padding-bottom: 48px!important;
+	    }
+
+	    .in-block {
+	    	background-color: rgba(23, 204, 122, 0.41);
+			color: white;
+		    max-width: 400px;
+		    margin: auto;
+		    padding: 15px;
+		    text-align: center!important;
+	    }
+
+	    .in-note {
+	    	max-width: 800px;
+	    }
+
+	    input, textarea {
+	        border: 1px solid #e1e1e1;
+	        padding: 3px;
+	    }
+
+	    .b-note-author {
+	    	text-align: right;
+	    	color: rgba(1, 7, 10, 0.79);
+	    }
+
+	    .b-note-users {
+	        text-align: left;
+	        color: #ffff7a;
+	    }
+
+	    .b-note-title {
+	    	font-weight: bold;
+	    	color: rgba(0, 0, 0, 0.82);
+	    	font-size: 15;
+	    }
+
+	    .title {
+	    	text-align: center;
+	    	margin-top: 0px;
+	    	color: blue;
+	    	background-color: rgba(55, 204, 122, 0.41);
+	    	padding: 0px;
+	    }
+
+	    textarea[name=text] {
+	        width: 300px;
+	        height: 150px;
+	    }
+
+		ul {
+		    list-style-type: none;
+		    margin: 0;
+		    padding: 0;
+		    overflow: hidden;
+		    background-color: #333;
+		}
+
+		li {
+		    float: left;
+		}
+
+		.float-right {
+			float: right;
+			margin-right: 50px;
+		}
+
+		li a {
+		    display: block;
+		    color: white;
+		    text-align: center;
+		    padding: 14px 16px;
+		    text-decoration: none;
+		}
+		.as-li-a {
+			display: block;
+		    color: white;
+		    text-align: center;
+		    padding: 14px 16px;
+		    text-decoration: none;
+		}
+
+		p a {
+			color: rgba(9, 47, 49, 0.94);
+			text-align: center;
+			padding: 14px 16px;
+			text-decoration: none;
+		}
+
+		li a:hover {
+		    background-color: #111;
+		}
+
+		body {
+			margin: 0;
+			background-color: #616161!important;
+		}
+		</style>
+	</head>
+	<body>
+	<ul>
+		<li><%= link_to "Home" => '/'%></li>
+		% if ( $self->session('logged_in') ) {
+			<li class="float-right"><%= link_to "Logout" => '/logout'%></li>
+			<li class="float-right as-li-a">Hi <%= $self->session->{username} %>!</li>
+			<li><%= link_to "Notes" => '/notes'%></li>
+			<li><%= link_to "My notes" => '/mynotes'%></li>
+			<li><%= link_to "Create Note" => '/create_note'%></li>
+		% } else {
+			<li class="float-right"><%= link_to "Sign in/Sign up" => '/login'%></li>
+		% }
+	</ul>
+	<%= content %>
+	</body>
+</html>

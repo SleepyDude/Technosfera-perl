@@ -1,0 +1,12 @@
+% layout 'default';
+% title 'Oops';
+
+<div class="ex-block">
+    <div class="in-block">
+		<h2>Oops</h2>
+		<p>Wrong pass or user already exist.</p> 
+		<p>
+		%= link_to "Try again" => 'login'
+		</p>
+    </div>
+</div>
