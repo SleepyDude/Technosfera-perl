@@ -43,6 +43,11 @@ has table_name => (
 
 =cut
 
+has primary_key => (
+    is => 'rw',
+    isa => 'Str',
+);
+
 =head2 auto_increment_field
 
 Имя поля, значение для которого определяется самой БД. Значение данного поля будет игнорироваться при запросах вставки. Может быть не заданно. Если заданно, то всегда совпдает с C<primary_key>. 
@@ -87,25 +92,35 @@ has fields => (
 after make_immutable => sub {
     my ($self) = @_;
 
+    # Должен быть задан класс-адаптер, db "Local::MusicLib::DB::SQLite" в примере
     confess "db class must be defined!" unless $self->db_class;
+    # Должна быть задана таблица, table 'tracks' в примере
     confess "table must be defined!" unless $self->table_name;
 
     for my $field_name ( @{ $self->fields } ) {
+        # метод get_attribute нигде не могу найти, возможно нужно его написать
+        # нашел в описании Mouse::Meta::Class 
+        # описание:    get_attribute(Name) -> Mouse::Meta::Attribute
+        #              Returns the Mouse::Meta::Attribute with the given name
         my $attr = $self->get_attribute($field_name);
         if($attr->index) {
             if($self->primary_key && $attr->index eq 'primary' && $field_name ne $self->primary_key) {
                 confess "primary index must be used only once!";
             } elsif ($attr->index eq 'primary') {
+                # Вызов сеттера, установка primary_key в значение $field_name
                 $self->primary_key($field_name);
             }
             if($attr->auto_increment) {
                 unless($attr->index && $attr->index eq 'primary') {
                     confess "auto increment can be applied only on primary key!";
                 } else {
+                    # Вызов сеттера, установка auto_increment_field в значение $field_name
                     $self->auto_increment_field($field_name);
                 }
             }
             if($attr->index eq 'uniq' || $attr->index eq 'primary') {
+                # функция из Mouse::Meta::Class
+                # Добавляет новый метод в owner class, добавляет селектор
                 $self->add_method( "select_by_".$field_name => sub {
                     my ($class, $keys) = @_;
                     return $class->select($field_name, $keys);

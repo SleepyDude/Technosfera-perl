@@ -184,3 +184,17 @@ Local/
 * по списку идентификаторов
 * по названию
 * по индетификатору альбома
+
+
+
+
+CREATE TABLE tracks(
+id INTEGER PRIMARY KEY,
+album_id INTEGER,
+track_name TEXT,
+track_length INTEGER,
+track_addtime INTEGER
+);
+
+
+INSERT INTO muslib.tracks (album_id, track_name, track_length, track_addtime) VALUES (1,"TN",13,17);
