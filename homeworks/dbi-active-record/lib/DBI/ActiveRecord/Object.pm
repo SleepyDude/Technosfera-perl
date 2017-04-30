@@ -2,6 +2,7 @@ package DBI::ActiveRecord::Object;
 use Mouse;
 
 use Carp qw/confess/;
+use DDP;
 
 =encoding utf8
 
@@ -59,7 +60,7 @@ sub insert {
 
 sub update {
 	my ($self) = @_;
-	return $self->meta->db_class->instance->insert($self);
+	return $self->meta->db_class->instance->update($self);
 }
 
 =head2 delete()

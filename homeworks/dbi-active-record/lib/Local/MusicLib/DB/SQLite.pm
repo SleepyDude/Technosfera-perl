@@ -7,7 +7,7 @@ use FindBin;
 sub _build_connection_params {
     my ($self) = @_;
     return [
-        'dbi:SQLite:dbname=../muslib.db', '', '', {}
+        'dbi:SQLite:dbname=muslib.db', '', '', {}
     ];
 }
 

@@ -198,3 +198,15 @@ track_addtime INTEGER
 
 
 INSERT INTO muslib.tracks (album_id, track_name, track_length, track_addtime) VALUES (1,"TN",13,17);
+
+
+MYSQL:
+
+CREATE TABLE `tracks` (
+  `id` INTEGER AUTO_INCREMENT NOT NULL,
+  `album_id` INT NOT NULL,
+  `name` VARCHAR(90) NOT NULL,
+  `extension` INT NOT NULL,
+  `create_time` TIMESTAMP NOT NULL,
+  PRIMARY KEY (`id`)
+);

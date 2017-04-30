@@ -4,6 +4,7 @@ use Mouse::Exporter;
 use Mouse::Util::MetaRole;
 
 use Carp qw/confess/;
+use DDP;
 
 =encoding UTF8
 
@@ -30,7 +31,7 @@ C<DBI::ActiveRecord> - основной класс, через который п
 =cut
 
 Mouse::Exporter->setup_import_methods(
-    as_is => [qw/db table/],
+    as_is => [qw/db table has_field/],
     also => 'Mouse',
 ); 
 
@@ -103,8 +104,20 @@ Sugar-функция для создания атрибутов, связанн�
 
 Кроме того, в качестве параметров можно указать любые дополнительные параметры, определенные трейтом C<DBI::ActiveRecord::Trait::Attribute::Field>.
 
-Все созданные C<has_field> атрибуты складывается в мета-атрибут C<fields>, определяемый трейтом C<DBI::ActiveRecord::Trait::Class>.
+Все созданные C<has_field> НАЗВАНИЯ атрибутов складывается в мета-атрибут C<fields>, определяемый трейтом C<DBI::ActiveRecord::Trait::Class>.
 
 =cut
+
+sub has_field {
+    my ($field_name, %params) = @_;
+
+    $params{is} = 'rw';
+    $params{traits} = [ 'DBI::ActiveRecord::Trait::Attribute::Field' ];
+    my $meta = caller->meta;
+    $meta->add_attribute(
+        $field_name => \%params
+    );
+    push @{ caller->meta->fields() }, $field_name;
+}
 
 1;

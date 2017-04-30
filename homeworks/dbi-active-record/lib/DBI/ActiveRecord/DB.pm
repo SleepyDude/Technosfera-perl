@@ -4,6 +4,9 @@ use Mouse;
 use DBI;
 use Carp qw/confess/;
 
+use DDP;
+use feature 'say';
+
 =encoding utf8
 
 =head1 NAME
@@ -133,7 +136,6 @@ sub insert {
         my $attr = $obj->meta->get_attribute($_);
         push @bind, ( $attr->serializer ? $attr->serializer->($obj->$_) : $obj->$_ );
     }
-
     my $autoinc_field = $obj->meta->auto_increment_field;
     my $last_insert_id = $self->_insert($obj->meta->table_name, $autoinc_field, \@ok_fields, \@bind);
     if($autoinc_field) {
@@ -165,8 +167,10 @@ sub update {
     my $fields = $obj->meta->fields;
     # Выбираем имя primary key поля, геттер внутри Class.pm
     my $key_field = $obj->meta->primary_key;
+
     # Выбираем его значение
-    my $key_value = $obj->meta->get_attribute($key_field);
+    my $key_value = $obj->$key_field;
+
     # Выбираем как и в предыдущем случае поля без автоинкремента
     my @ok_fields = grep { not $obj->meta->get_attribute($_)->auto_increment } @$fields;
     my @bind = ();

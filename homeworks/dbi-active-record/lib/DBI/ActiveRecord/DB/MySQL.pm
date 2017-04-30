@@ -4,6 +4,7 @@ extends 'DBI::ActiveRecord::DB';
 
 use Carp qw/confess/;
 use DDP;
+use feature 'say';
 
 =encoding utf8
 
@@ -75,57 +76,9 @@ sub _insert {
     my $fields_str = join ", ", @$fields;
     my $placeholders = join ", ", map { "?" } @$fields; 
 
-    # my $stmt = qq(CREATE TABLE tracks
-    # (
-    #     id            INT PRIMARY KEY NOT NULL,
-    #     album_id      INT             NOT NULL,
-    #     track_name    TEXT            NOT NULL,
-    #     track_length  INT             NOT NULL,
-    #     track_addtime INT             NOT NULL,
-    # ););
-
-    # my $rv = $dbh->do($stmt);
-    # if($rv < 0){
-    #    print $DBI::errstr;
-    # } else {
-    #    print "Table created successfully\n";
-    # }
-
-    $dbh->begin_work;
     my $last_insert_id;
-    p $table;
-    p $fields_str;
-    p $placeholders;
-    p $values;
-    p $dbh;
-    my $wrong = 0;
-
-    # $dbh->do("INSERT INTO tracks (album_id, track_name, track_length, track_addtime) VALUES (888,'Ghost Hippies',111,111)");
-    
-    # my $sth = $dbh->prepare("INSERT INTO $table ($fields_str) VALUES ($placeholders)")
-    #     or $wrong = 1;
-    # $sth->execute(@$values)
-    #     or $wrong = 1;
-
-
-
-    # $dbh->do("INSERT INTO $table ($fields_str) VALUES ($placeholders)", {}, @$values);
-    # $dbh->commit; 
-
-
-    
-    # if ($wrong) {
-    #     $dbh->rollback;
-    #     confess "can't do insert request!";
-    # } else {
-    #     $last_insert_id = $autoinc_field ? $dbh->last_insert_id("", "", $table, $autoinc_field) : 0;
-    #     $dbh->commit; 
-    # }
-    # return $last_insert_id;
-    # $last_insert_id = $autoinc_field ? $dbh->last_insert_id("", "", $table, $autoinc_field) : 0;
 
     if($dbh->do("INSERT INTO $table ($fields_str) VALUES ($placeholders)", {}, @$values)) {
-    # if($dbh->do("INSERT INTO tracks (album_id, track_name, track_length, track_addtime) VALUES (888,'Ghost Hippies',111,111)")) {
         $last_insert_id = $autoinc_field ? $dbh->last_insert_id("", "", $table, $autoinc_field) : 0;
         $dbh->commit; 
     } else {
@@ -152,7 +105,7 @@ sub _update {
 
     my $placeholders = join ", ", map { "$_ = ?" } @$fields;
 
-    if($dbh->do("UPDATE $table SET ($placeholders) WHERE $key_field = ?", {}, @$values)) {
+    if($dbh->do("UPDATE $table SET $placeholders WHERE $key_field = ?", {}, @$values)) {
         $dbh->commit;
         return 1;
     } else {
@@ -175,8 +128,10 @@ sub _delete {
     my $dbh = $self->connection;
 
     if($dbh->do("DELETE FROM $table WHERE $key_field = ?", {}, $key_value)) {
+        $dbh->commit;
         return 1;
     } else {
+        $dbh->rollback;
         confess "can't do delete request!";
     }
 }
