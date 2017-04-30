@@ -2,7 +2,6 @@ package DBI::ActiveRecord::Object;
 use Mouse;
 
 use Carp qw/confess/;
-use DDP;
 
 =encoding utf8
 

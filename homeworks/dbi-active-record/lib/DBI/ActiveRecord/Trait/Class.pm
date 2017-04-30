@@ -1,7 +1,6 @@
 package DBI::ActiveRecord::Trait::Class;
 use Mouse::Role;
 use DDP;
-use feature qw(say); 
 
 use Carp qw/confess/;
 

@@ -4,7 +4,6 @@ use Mouse::Exporter;
 use Mouse::Util::MetaRole;
 
 use Carp qw/confess/;
-use DDP;
 
 =encoding UTF8
 

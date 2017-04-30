@@ -1,0 +1,28 @@
+MYSQL:
+
+CREATE TABLE `tracks` (
+  `id` INTEGER AUTO_INCREMENT NOT NULL,
+  `album_id` INT NOT NULL,
+  `name` VARCHAR(90) NOT NULL,
+  `extension` INT NOT NULL,
+  `create_time` TIMESTAMP NOT NULL,
+  PRIMARY KEY (`id`)
+);
+
+CREATE TABLE `artists` (
+  `id` INTEGER AUTO_INCREMENT NOT NULL,
+  `name` VARCHAR(120) NOT NULL,
+  `country` VARCHAR(2) NOT NULL,
+  `create_time` TIMESTAMP NOT NULL,
+  PRIMARY KEY (`id`)
+);
+
+CREATE TABLE `albums` (
+  `id` INTEGER AUTO_INCREMENT NOT NULL,
+  `artist_id` INT NOT NULL,
+  `name` VARCHAR(120) NOT NULL,
+  `year` INT NOT NULL,
+  `type` VARCHAR(20) NOT NULL,
+  `create_time` TIMESTAMP NOT NULL,
+  PRIMARY KEY (`id`)
+);

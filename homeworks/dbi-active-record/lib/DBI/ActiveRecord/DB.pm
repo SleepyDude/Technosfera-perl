@@ -4,9 +4,6 @@ use Mouse;
 use DBI;
 use Carp qw/confess/;
 
-use DDP;
-use feature 'say';
-
 =encoding utf8
 
 =head1 NAME
