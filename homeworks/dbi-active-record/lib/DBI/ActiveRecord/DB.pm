@@ -155,25 +155,17 @@ sub insert {
 
 =cut
 
-
-# Данные обновляются по первичному ключу
-# необходимо передать my ($self, $table, $key_field, $key_value, $fields, $values) = @_;
 sub update {
     my ($self, $obj) = @_;
 
     my $fields = $obj->meta->fields;
-    # Выбираем имя primary key поля, геттер внутри Class.pm
     my $key_field = $obj->meta->primary_key;
-
-    # Выбираем его значение
     my $key_value = $obj->$key_field;
 
-    # Выбираем как и в предыдущем случае поля без автоинкремента
     my @ok_fields = grep { not $obj->meta->get_attribute($_)->auto_increment } @$fields;
     my @bind = ();
     for(@ok_fields) {
         my $attr = $obj->meta->get_attribute($_);
-        # если определен сериализатор, то пропускаем аргументы через него, заполняем bind
         push @bind, ( $attr->serializer ? $attr->serializer->($obj->$_) : $obj->$_ );
     }
 
