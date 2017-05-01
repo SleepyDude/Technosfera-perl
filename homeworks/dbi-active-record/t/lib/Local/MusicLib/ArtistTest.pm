@@ -5,6 +5,51 @@ use Local::MusicLib::Artist;
 use DDP;
 use feature 'say';
 
+my $dt_1 = DateTime->new (
+	year       => 1977,
+	month      => 7,
+	day        => 23,
+	hour       => 13,
+	minute     => 22,
+	second     => 11,
+);
+
+my $dt_2 = DateTime->new (
+	year       => 1975,
+	month      => 4,
+	day        => 2,
+	hour       => 8,
+	minute     => 12,
+	second     => 05,
+);
+
+my $dt_3 = DateTime->new (
+	year       => 2005,
+	month      => 3,
+	day        => 22,
+	hour       => 21,
+	minute     => 30,
+	second     => 43,
+);
+
+my $artist_1 = Local::MusicLib::Artist->new(
+	name => 'Dire Straits',
+	country => 'uk',
+	create_time => $dt_1,
+);
+
+my $artist_2 = Local::MusicLib::Artist->new(
+	name => 'Boston',
+	country => 'us',
+	create_time => $dt_2,
+);
+
+my $artist_3 = Local::MusicLib::Artist->new(
+	name => 'Motorama',
+	country => 'ru',
+	create_time => $dt_3,
+);
+
 sub test_set_get {
 	my $self = shift;
 
@@ -31,83 +76,22 @@ sub test_set_get {
 sub test_insert_select {
 	my $self = shift;
 
-	my $dt = DateTime->new (
-		year       => 1977,
-		month      => 7,
-		day        => 23,
-		hour       => 13,
-		minute     => 22,
-		second     => 11,
-	);
-
-	my $artist = Local::MusicLib::Artist->new(
-		name => 'Dire Straits',
-		country => 'uk',
-		create_time => $dt,
-	);
-
-	my $has_ins = $artist->insert;
+	my $has_ins = $artist_1->insert;
 	is($has_ins, 1);
 
-	my $last_id = $artist->id;
+	my $last_id = $artist_1->id;
 
 	my $selected_artist = Local::MusicLib::Artist->select_by_id($last_id);
-	is($selected_artist->id, $artist->id, 'eq id');
-	is($selected_artist->name, $artist->name, 'eq name');
-	is($selected_artist->country, $artist->country, 'eq country');
-	is($selected_artist->create_time, $artist->create_time, 'eq create_time');
+	is($selected_artist->id, $artist_1->id, 'eq id');
+	is($selected_artist->name, $artist_1->name, 'eq name');
+	is($selected_artist->country, $artist_1->country, 'eq country');
+	is($selected_artist->create_time, $artist_1->create_time, 'eq create_time');
 
-	$artist->delete;
+	$artist_1->delete;
 }
 
 sub test_insert_select_id {
 	my $self = shift;
-
-	my $dt_1 = DateTime->new (
-		year       => 1977,
-		month      => 7,
-		day        => 23,
-		hour       => 13,
-		minute     => 22,
-		second     => 11,
-	);
-
-	my $dt_2 = DateTime->new (
-		year       => 1975,
-		month      => 4,
-		day        => 2,
-		hour       => 8,
-		minute     => 12,
-		second     => 05,
-	);
-
-	my $dt_3 = DateTime->new (
-		year       => 2005,
-		month      => 3,
-		day        => 22,
-		hour       => 21,
-		minute     => 30,
-		second     => 43,
-	);
-
-	my $artist_1 = Local::MusicLib::Artist->new(
-		name => 'Dire Straits',
-		country => 'uk',
-		create_time => $dt_1,
-	);
-
-	my $artist_2 = Local::MusicLib::Artist->new(
-		name => 'Boston',
-		country => 'us',
-		create_time => $dt_2,
-	);
-
-	my $artist_3 = Local::MusicLib::Artist->new(
-		name => 'Motorama',
-		country => 'ru',
-		create_time => $dt_3,
-	);
-
 
 	my @artists = ($artist_1, $artist_2, $artist_3);
 
@@ -136,51 +120,6 @@ sub test_insert_select_id {
 sub test_insert_select_name {
 	my $self = shift;
 
-	my $dt_1 = DateTime->new (
-		year       => 1977,
-		month      => 7,
-		day        => 23,
-		hour       => 13,
-		minute     => 22,
-		second     => 11,
-	);
-
-	my $dt_2 = DateTime->new (
-		year       => 1975,
-		month      => 4,
-		day        => 2,
-		hour       => 8,
-		minute     => 12,
-		second     => 05,
-	);
-
-	my $dt_3 = DateTime->new (
-		year       => 2005,
-		month      => 3,
-		day        => 22,
-		hour       => 21,
-		minute     => 30,
-		second     => 43,
-	);
-
-	my $artist_1 = Local::MusicLib::Artist->new(
-		name => 'Dire Straits',
-		country => 'uk',
-		create_time => $dt_1,
-	);
-
-	my $artist_2 = Local::MusicLib::Artist->new(
-		name => 'Boston',
-		country => 'us',
-		create_time => $dt_2,
-	);
-
-	my $artist_3 = Local::MusicLib::Artist->new(
-		name => 'Motorama',
-		country => 'ru',
-		create_time => $dt_3,
-	);
-
 	$artist_1->insert;
 	$artist_2->insert;
 	$artist_3->insert;
@@ -196,30 +135,6 @@ sub test_insert_select_name {
 
 sub test_update {
 	my $self = shift;
-
-	my $dt_1 = DateTime->new (
-		year       => 1977,
-		month      => 7,
-		day        => 23,
-		hour       => 13,
-		minute     => 22,
-		second     => 11,
-	);
-
-	my $dt_2 = DateTime->new (
-		year       => 1975,
-		month      => 4,
-		day        => 2,
-		hour       => 8,
-		minute     => 12,
-		second     => 05,
-	);
-
-	my $artist_1 = Local::MusicLib::Artist->new(
-		name => 'Dire Straits',
-		country => 'uk',
-		create_time => $dt_1,
-	);
 
 	$artist_1->insert;
 
