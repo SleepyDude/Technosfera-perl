@@ -1,5 +1,5 @@
 % layout 'default';
-% title 'Notes';
+% title $title;
 
 <!-- Список заметок -->
 % foreach my $note ( @{ $notes } ) {

@@ -1,4 +1,4 @@
-package Notes::Schema::Web_notes;
+package Notes::Schema::Notes;
 
 use Notes::DBconnector;
 use Notes::Schema::Users;
@@ -48,11 +48,11 @@ sub get_notes_by_username {
 	my $res = $sth->fetchall_arrayref({});
 	my %notes;
 	my @sh;
-	foreach (@{ $res }) {
-		push @{ $notes{ $_->{id} }->{sharedUsers} }, $_->{sharedUsers};
-		$notes{ $_->{id} }->{author} = $_->{author};
-		$notes{ $_->{id} }->{text} = $_->{text};
-		$notes{ $_->{id} }->{title} = $_->{title};
+	foreach my $note (@{ $res }) {
+		push @{ $notes{ $note->{id} }->{sharedUsers} }, $note->{sharedUsers};
+		$notes{ $note->{id} }->{author} = $note->{author};
+		$notes{ $note->{id} }->{text} = $note->{text};
+		$notes{ $note->{id} }->{title} = $note->{title};
 	}
 	return \%notes;
 }
@@ -68,11 +68,11 @@ sub get_notes_by_author {
 	$sth->execute($author);
 	my %notes;
 	my $res = $sth->fetchall_arrayref({});
-	foreach (@{ $res }) {
-		push @{ $notes{ $_->{id} }->{sharedUsers} }, $_->{username};
-		$notes{ $_->{id} }->{author} = $_->{author};
-		$notes{ $_->{id} }->{text} = $_->{text};
-		$notes{ $_->{id} }->{title} = $_->{title};
+	foreach my $note (@{ $res }) {
+		push @{ $notes{ $note->{id} }->{sharedUsers} }, $note->{username};
+		$notes{ $note->{id} }->{author} = $note->{author};
+		$notes{ $note->{id} }->{text} = $note->{text};
+		$notes{ $note->{id} }->{title} = $note->{title};
 	}
 	return \%notes;
 }
