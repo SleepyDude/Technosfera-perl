@@ -3,6 +3,7 @@ package Local::MusicLib::Artist;
 use DBI::ActiveRecord;
 use Local::MusicLib::DB::MySQL;
 
+use Local::MusicLib::Util qw(dtSerializer dtDeserializer);
 use DateTime;
 
 db "Local::MusicLib::DB::MySQL";
@@ -27,20 +28,8 @@ has_field country => (
 
 has_field create_time => (
     isa => 'DateTime',
-    serializer => sub { $_[0]->format_cldr("YYYY-MM-dd HH:mm:ss"); },
-    deserializer => sub {
-        my $string = shift;
-    	my @data = $string =~ /^(\d+)-(\d+)-(\d+)\s(\d+):(\d+):(\d+)$/;
-    	my $dt = DateTime->new (
-			year       => $data[0],
-			month      => $data[1],
-			day        => $data[2],
-			hour       => $data[3],
-			minute     => $data[4],
-			second     => $data[5],
-		);
-		return $dt;
-     },
+    serializer => \&dtSerializer,
+    deserializer => \&dtDeserializer,
 );
 
 no DBI::ActiveRecord;

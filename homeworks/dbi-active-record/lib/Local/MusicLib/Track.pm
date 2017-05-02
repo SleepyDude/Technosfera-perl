@@ -3,6 +3,7 @@ package Local::MusicLib::Track;
 use DBI::ActiveRecord;
 use Local::MusicLib::DB::MySQL;
 
+use Local::MusicLib::Util qw(dtSerializer dtDeserializer extSerializer extDeserializer);
 use DateTime;
 
 db "Local::MusicLib::DB::MySQL";
@@ -23,37 +24,14 @@ has_field name => (
 
 has_field extension => (
     isa => 'Str',
-    serializer => sub { 
-        my $dt = shift;
-    	my ($h,$m,$s) = split /:/, $dt;
-    	return $h*3600 + $m*60 + $s;
-    },
-    deserializer => sub {
-        my $seconds = shift;
-    	my $s = $seconds % 60;
-    	my $m = int($seconds / 60) % 60;
-    	my $h = int($seconds / 3600);
-    	my $result = sprintf("%.2d:%.2d:%.2d", $h,$m,$s);
-    	return $result;
-    },
+    serializer => \&extSerializer,
+    deserializer => \&extDeserializer,
 );
 
 has_field create_time => (
     isa => 'DateTime',
-    serializer => sub { $_[0]->format_cldr("YYYY-MM-dd HH:mm:ss"); },
-    deserializer => sub {
-        my $string = shift;
-    	my @data = $string =~ /^(\d+)-(\d+)-(\d+)\s(\d+):(\d+):(\d+)$/;
-    	my $dt = DateTime->new (
-			year       => $data[0],
-			month      => $data[1],
-			day        => $data[2],
-			hour       => $data[3],
-			minute     => $data[4],
-			second     => $data[5],
-		);
-		return $dt;
-     },
+    serializer => \&dtSerializer,
+    deserializer => \&dtDeserializer,
 );
 
 has_field album_id => (

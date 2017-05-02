@@ -8,6 +8,9 @@ CREATE TABLE `tracks` (
   `create_time` TIMESTAMP NOT NULL,
   PRIMARY KEY (`id`)
 );
+CREATE INDEX idx_album_id ON tracks (album_id);
+CREATE INDEX idx_name ON tracks (name);
+
 
 CREATE TABLE `artists` (
   `id` INTEGER AUTO_INCREMENT NOT NULL,
@@ -16,6 +19,8 @@ CREATE TABLE `artists` (
   `create_time` TIMESTAMP NOT NULL,
   PRIMARY KEY (`id`)
 );
+CREATE INDEX idx_name ON artists (name);
+
 
 CREATE TABLE `albums` (
   `id` INTEGER AUTO_INCREMENT NOT NULL,
@@ -26,3 +31,6 @@ CREATE TABLE `albums` (
   `create_time` TIMESTAMP NOT NULL,
   PRIMARY KEY (`id`)
 );
+CREATE INDEX idx_name ON albums (name);
+CREATE INDEX idx_type ON albums (type);
+CREATE INDEX idx_artist_id ON albums (artist_id);

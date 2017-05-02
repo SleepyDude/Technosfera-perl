@@ -2,7 +2,15 @@ package Local::MusicLib::Album;
 
 use DBI::ActiveRecord;
 use Local::MusicLib::DB::MySQL;
+use Local::MusicLib::Util qw(dtSerializer dtDeserializer);
 use Carp qw/confess/;
+use DDP;
+
+use Mouse::Util::TypeConstraints;
+
+enum 'TypeEnum' => qw(single studio soundtrack box live collection);
+
+no Mouse::Util::TypeConstraints;
 
 use DateTime;
 
@@ -32,15 +40,7 @@ has_field type => (
     isa => 'Str',
     index => 'common',
     default_limit => 100,
-    serializer => sub {
-        my $data = quotemeta(shift);
-        my $valid = 'single studio soundtrack box live collection';
-        if ($valid =~ /$data/) {
-            return $data;
-        } else {
-            confess 'Wrong type!';
-        }
-    },
+    isa => 'TypeEnum',
 );
 
 has_field year => (
@@ -49,20 +49,8 @@ has_field year => (
 
 has_field create_time => (
     isa => 'DateTime',
-    serializer => sub { $_[0]->format_cldr("YYYY-MM-dd HH:mm:ss"); },
-    deserializer => sub {
-        my $string = shift;
-    	my @data = $string =~ /^(\d+)-(\d+)-(\d+)\s(\d+):(\d+):(\d+)$/;
-    	my $dt = DateTime->new (
-			year       => $data[0],
-			month      => $data[1],
-			day        => $data[2],
-			hour       => $data[3],
-			minute     => $data[4],
-			second     => $data[5],
-		);
-		return $dt;
-     },
+    serializer => \&dtSerializer,
+    deserializer => \&dtDeserializer,
 );
 
 no DBI::ActiveRecord;
