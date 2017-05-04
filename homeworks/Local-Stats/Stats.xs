@@ -168,7 +168,6 @@ stat (r_self)
 		int key_length;
 		int i;
 		for (i = 0; i < keys; i++) {
-			char *key = NULL;
 			
 			value = hv_iternextsv(copy_metrics, &key, &key_length);
 			_value = (HV*)value;
