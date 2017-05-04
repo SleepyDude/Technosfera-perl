@@ -122,3 +122,80 @@ add (r_self, name, value)
 	        LEAVE;
 	        hv_store(metrics, name, strlen(name), newRV((SV *)conf), 0);
 		}
+
+
+SV*
+stat (r_self)
+		SV *r_self;
+	CODE:
+		// Check object
+		if (!( SvOK(r_self) && SvROK(r_self) )) croak("object must be a hashref");
+		SV *_self = SvRV(r_self);
+		// Check type
+		if (SvTYPE(_self) != SVt_PVHV) croak("object must be a hashref");
+		// Cast to hash type
+		HV *self = (HV*)_self;
+		// Check keys
+		if (!( hv_exists(self, "metrics", 7) && hv_exists(self, "code", 4) ))
+			croak("object must contain keys 'metrics' and 'code'");
+		// Fetch metrics and code
+		SV **r__metrics = hv_fetchs(self, "metrics", 0);
+		SV **r__code = hv_fetchs(self, "code", 0);
+		if (!( r__metrics && r__code )) croak("Non allow NULL in metrics and code values");
+
+		SV *__metrics = *r__metrics;
+		if (!( SvOK(__metrics) && SvROK(__metrics) )) croak("metrics must be a hashref");
+		SV *_metrics = SvRV(__metrics);
+		if (SvTYPE(_metrics) != SVt_PVHV) croak("metrics must be a hashref");
+		HV *metrics = (HV*)_metrics;
+
+		SV *__code = *r__code;
+		if (!SvOK(__code)) croak("config must be a ref");
+		SV *_code = SvRV(__code);
+		if (SvTYPE(_code) != SVt_PVCV) croak("code must be a coderef");
+
+		HV* result = newHV();
+
+		I32 keys = hv_iterinit(metrics);
+
+		SV *value;
+		HV* _value;
+		
+		I32 i;
+		for (i = 0; i < keys; i++) {
+			char *key = NULL;
+			I32 key_length = 0;
+			value = hv_iternextsv(metrics, &key, &key_length);
+			_value = (HV*)value;
+
+			HV* conf = newHV();
+			ENTER;
+	        SAVETMPS;
+	        PUSHMARK(SP);
+	        EXTEND(SP, 1);
+	        mPUSHp(key, key_length);
+	        PUTBACK;
+	        int count = call_sv(_code, G_ARRAY);
+	        SPAGAIN;
+	        printf("count = %d\n", count);
+	        int j;
+	        
+	        for (j = 0; j < count; j++) {
+	        	char * arg = POPp;
+	        	printf("arg %d = %s\n", j, arg);
+	        	// double val = SvNV(*(hv_fetch(_value, arg, 3, 0)));
+	        	// if ( hv_exists(_value, arg, 3) ) {
+	        	// SV** _val = hv_fetch(_value, arg, 3, 0);
+	        	// 	// SV *val = *_val;
+	        	hv_store(conf, arg, 3, 30, 0);
+	        	// }
+	        }
+	        PUTBACK;
+	        FREETMPS;
+	        LEAVE;
+	        // hv_store(result, key, key_length, newRV((SV *)conf), 0);
+		}
+
+		RETVAL = (SV*)value;
+	OUTPUT:
+		RETVAL
