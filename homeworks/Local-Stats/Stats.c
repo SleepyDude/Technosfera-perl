@@ -396,6 +396,102 @@ XS_EUPXS(XS_Local__Stats_add)
     XSRETURN_EMPTY;
 }
 
+
+XS_EUPXS(XS_Local__Stats_stat); /* prototype to pass -Wmissing-prototypes */
+XS_EUPXS(XS_Local__Stats_stat)
+{
+    dVAR; dXSARGS;
+    if (items != 1)
+       croak_xs_usage(cv,  "r_self");
+    {
+	SV *	r_self = ST(0)
+;
+	SV *	RETVAL;
+#line 131 "Stats.xs"
+		// Check object
+		if (!( SvOK(r_self) && SvROK(r_self) )) croak("object must be a hashref");
+		SV *_self = SvRV(r_self);
+		// Check type
+		if (SvTYPE(_self) != SVt_PVHV) croak("object must be a hashref");
+		// Cast to hash type
+		HV *self = (HV*)_self;
+		// Check keys
+		if (!( hv_exists(self, "metrics", 7) && hv_exists(self, "code", 4) ))
+			croak("object must contain keys 'metrics' and 'code'");
+		// Fetch metrics and code
+		SV **r__metrics = hv_fetchs(self, "metrics", 0);
+		SV **r__code = hv_fetchs(self, "code", 0);
+		if (!( r__metrics && r__code )) croak("Non allow NULL in metrics and code values");
+
+		SV *__metrics = *r__metrics;
+		if (!( SvOK(__metrics) && SvROK(__metrics) )) croak("metrics must be a hashref");
+		SV *_metrics = SvRV(__metrics);
+		if (SvTYPE(_metrics) != SVt_PVHV) croak("metrics must be a hashref");
+		HV *metrics = (HV*)_metrics;
+
+		SV *__code = *r__code;
+		if (!SvOK(__code)) croak("config must be a ref");
+		SV *_code = SvRV(__code);
+		if (SvTYPE(_code) != SVt_PVCV) croak("code must be a coderef");
+
+		HV* result = newHV();
+
+		HV *copy_metrics = newHV();
+		copy_metrics = metrics;
+
+		I32 keys = hv_iterinit(copy_metrics);
+
+		SV *value;
+		HV* _value;
+		HV* copy_value = newHV();
+		char *key = NULL;
+		int key_length;
+		int i;
+		for (i = 0; i < keys; i++) {
+			char *key = NULL;
+
+			value = hv_iternextsv(copy_metrics, &key, &key_length);
+			_value = (HV*)value;
+
+			// HV* conf = newHV();
+			// ENTER;
+	  //       SAVETMPS;
+	  //       PUSHMARK(SP);
+	  //       EXTEND(SP, 1);
+	  //       mPUSHp(key, key_length);
+	  //       PUTBACK;
+	  //       int count = call_sv(_code, G_ARRAY);
+	  //       SPAGAIN;
+	  //       printf("count = %d\n", count);
+	  //       int j;
+
+	  //       for (j = 0; j < count; j++) {
+	  //       	char * arg = POPp;
+	  //       	printf("arg %d = %s\n", j, arg);
+	  //       	// double val = SvNV(*(hv_fetch(_value, arg, 3, 0)));
+	  //       	// if ( hv_exists(_value, arg, 3) ) {
+	  //       	// SV** _val = hv_fetch(_value, arg, 3, 0);
+	  //       	// printf("arg %d = %s\n", j, arg);
+	  //       	// 	// SV *val = *_val;
+	  //       	// hv_store(conf, arg, 3, 30, 0);
+	  //       	// }
+	  //       }
+	  //       PUTBACK;
+	  //       FREETMPS;
+	  //       LEAVE;
+	        // hv_store(result, key, key_length, newRV((SV *)conf), 0);
+		}
+
+		SV** _val = hv_fetch(_value, "sum", 3, 0);
+
+		RETVAL = _value;
+#line 489 "Stats.c"
+	RETVAL = sv_2mortal(RETVAL);
+	ST(0) = RETVAL;
+    }
+    XSRETURN(1);
+}
+
 #ifdef __cplusplus
 extern "C"
 #endif
@@ -426,6 +522,7 @@ XS_EXTERNAL(boot_Local__Stats)
 
         newXS_deffile("Local::Stats::constant", XS_Local__Stats_constant);
         newXS_deffile("Local::Stats::add", XS_Local__Stats_add);
+        newXS_deffile("Local::Stats::stat", XS_Local__Stats_stat);
 #if PERL_VERSION_LE(5, 21, 5)
 #  if PERL_VERSION_GE(5, 9, 0)
     if (PL_unitcheckav)

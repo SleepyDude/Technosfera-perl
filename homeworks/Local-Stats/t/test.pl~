@@ -8,16 +8,16 @@ use feature 'say';
 
 my $obj = Local::Stats->new( \&ret_func );
 p $obj;
-$obj->add('money', 15);
-p $obj;
+# $obj->add('money', 15);
+# p $obj;
 $obj->add('me', 40);
 p $obj;
 $obj->add('me', 20);
 p $obj;
-$obj->add('m3', 12.5);
-p $obj;
-$obj->add('m3', 22.5);
-p $obj;
+# $obj->add('m3', 12.5);
+# p $obj;
+# $obj->add('m3', 22.5);
+# p $obj;
 
 my $res = $obj->stat();
 p $res;
