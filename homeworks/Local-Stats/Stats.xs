@@ -156,7 +156,6 @@ stat (r_self)
 
 		HV* result = newHV();
 
-
 		HV* copy_value = newHV();
 
 		char *key;
