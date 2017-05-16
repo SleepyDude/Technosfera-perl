@@ -156,54 +156,22 @@ stat (r_self)
 
 		HV* result = newHV();
 
-		HV *copy_metrics = newHV();
-		copy_metrics = metrics;
 
-		I32 keys = hv_iterinit(copy_metrics);
-
-		SV *value;
-		HV* _value;
 		HV* copy_value = newHV();
-		char *key = NULL;
-		int key_length;
-		int i;
-		for (i = 0; i < keys; i++) {
-			char *key = NULL;
-			
-			value = hv_iternextsv(copy_metrics, &key, &key_length);
-			_value = (HV*)value;
 
-			// HV* conf = newHV();
-			// ENTER;
-	  //       SAVETMPS;
-	  //       PUSHMARK(SP);
-	  //       EXTEND(SP, 1);
-	  //       mPUSHp(key, key_length);
-	  //       PUTBACK;
-	  //       int count = call_sv(_code, G_ARRAY);
-	  //       SPAGAIN;
-	  //       printf("count = %d\n", count);
-	  //       int j;
-	        
-	  //       for (j = 0; j < count; j++) {
-	  //       	char * arg = POPp;
-	  //       	printf("arg %d = %s\n", j, arg);
-	  //       	// double val = SvNV(*(hv_fetch(_value, arg, 3, 0)));
-	  //       	// if ( hv_exists(_value, arg, 3) ) {
-	  //       	// SV** _val = hv_fetch(_value, arg, 3, 0);
-	  //       	// printf("arg %d = %s\n", j, arg);
-	  //       	// 	// SV *val = *_val;
-	  //       	// hv_store(conf, arg, 3, 30, 0);
-	  //       	// }
-	  //       }
-	  //       PUTBACK;
-	  //       FREETMPS;
-	  //       LEAVE;
-	        // hv_store(result, key, key_length, newRV((SV *)conf), 0);
+		char *key;
+	    I32 key_length;
+	    SV *value;
+	    HV *_value;
+
+		hv_iterinit(metrics);
+		while (value = hv_iternextsv(metrics, &key, &key_length)) {
+			_value = (HV*)value;
+			RETVAL = newRV((SV*)value);
 		}
 
 		SV** _val = hv_fetch(_value, "sum", 3, 0);
-
-		RETVAL = _value;
+		// if (SvRV())
+		
 	OUTPUT:
 		RETVAL
