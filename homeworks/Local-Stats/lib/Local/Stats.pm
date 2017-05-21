@@ -63,8 +63,19 @@ sub new {
     my ($pkg, $code) = @_;
     my $self = bless {}, $pkg;
     $self->{metrics} = {};
+    $self->{avg_info} = {};
     $self->{code} = $code;
     return $self;
+}
+
+sub metrics {
+    my $self = shift;
+    return $self->{metrics};
+}
+
+sub avg_info {
+    my $self = shift;
+    return $self->{avg_info};
 }
 
 1;

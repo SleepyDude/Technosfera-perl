@@ -29,15 +29,24 @@ add (r_self, name, value)
 		if (!( hv_exists(self, "metrics", 7) && hv_exists(self, "code", 4) ))
 			croak("object must contain keys 'metrics' and 'code'");
 		// Fetch values
-		SV **_metrics = hv_fetchs(self, "metrics", 0);
+		SV **r__metrics = hv_fetchs(self, "metrics", 0);
 		SV **r__code = hv_fetchs(self, "code", 0);
-		if (!( _metrics && r__code )) croak("Non allow NULL in metrics and code values");
+		SV **r__avg_info = hv_fetchs(self, "avg_info", 0);
+		if (!( r__metrics && r__code && r__avg_info )) croak("Non allow NULL in metrics, avg_info and code values");
 
-		SV *r_metrics = *_metrics;
-		if (!( SvOK(r_metrics) && SvROK(r_metrics) )) croak("metrics must be a hashref");
-		SV *__metrics = SvRV(r_metrics);
-		if (SvTYPE(__metrics) != SVt_PVHV) croak("metrics must be a hashref");
-		HV *metrics = (HV*)__metrics;
+		// Check metrics
+		SV *__metrics = *r__metrics;
+		if (!SvOK(__metrics)) croak("metrics must be a ref");
+		SV *_metrics = SvRV(__metrics);
+		if (SvTYPE(_metrics) != SVt_PVHV) croak("metrics must be a hashref");
+		HV *metrics = (HV*)_metrics;
+
+		// Check avg_info
+		SV *__avg_info = *r__avg_info;
+		if (!SvOK(__avg_info)) croak("avg_info must be a ref");
+		SV *_avg_info = SvRV(__avg_info);
+		if (SvTYPE(_avg_info) != SVt_PVHV) croak("avg_info must be a hashref");
+		HV *avg_info = (HV*)_avg_info;
 
 		// Check code
 		SV *__code = *r__code;
@@ -48,7 +57,7 @@ add (r_self, name, value)
 		double old_sum, new_sum, new_avg, old_min, old_max, new_min, new_max;
 		int old_cnt;
 
-		if ( hv_exists(metrics, name, strlen(name)) ) {
+		if ( hv_exists(metrics, name, strlen(name)) && hv_exists(avg_info, name, strlen(name))) {
 			SV **r__config = hv_fetch(metrics, name, strlen(name), 0);
 			if (!r__config) croak("Non allow NULL in metric config");
 			SV *__config = *r__config;
@@ -56,6 +65,14 @@ add (r_self, name, value)
 			SV *_config = SvRV(__config);
 			if (SvTYPE(_config) != SVt_PVHV) croak("config must be a hashref");
 			HV *config = (HV*)_config;
+
+			SV **r__avg_config = hv_fetch(avg_info, name, strlen(name), 0);
+			if (!r__avg_config) croak("Non allow NULL in metric avg_config");
+			SV *__avg_config = *r__avg_config;
+			if (!SvOK(__avg_config)) croak("avg_config must be a hashref");
+			SV *_avg_config = SvRV(__avg_config);
+			if (SvTYPE(_avg_config) != SVt_PVHV) croak("avg_config must be a hashref");
+			HV *avg_config = (HV*)_avg_config;
 
 			if ( hv_exists(config, "sum", 3) ) {
 				old_sum = SvNV(*(hv_fetch(config, "sum", 3, 0)));
@@ -67,6 +84,10 @@ add (r_self, name, value)
 				hv_store(config, "cnt", 3, newSViv(old_cnt + 1), 0);
 			}
 			if ( hv_exists(config, "avg", 3) ) {
+				new_sum = SvNV(*(hv_fetch(avg_config, "sum", 3, 0))) + value;
+				hv_store(avg_config, "sum", 3, newSVnv(new_sum), 0);
+				old_cnt = SvIV(*(hv_fetch(avg_config, "cnt", 3, 0)));
+				hv_store(avg_config, "cnt", 3, newSViv(old_cnt + 1), 0);
 				new_avg = new_sum / (old_cnt + 1);
 				hv_store(config, "avg", 3, newSVnv(new_avg), 0);
 			}
@@ -84,6 +105,7 @@ add (r_self, name, value)
 		} else {
 			// Call function
 			HV* conf = newHV();
+			HV* avg_conf = newHV();
 			dSP;
 			ENTER;
 	        SAVETMPS;
@@ -94,6 +116,7 @@ add (r_self, name, value)
 
 	        int count = call_sv(_code, G_ARRAY);
 	        int i;
+	        int empty = 1;
 	        SPAGAIN;
 	        // Now arguments in stack
 			// Catch them all
@@ -101,26 +124,36 @@ add (r_self, name, value)
 	        	char * arg = POPp;
 
 	        	if (strcmp(arg,"cnt") == 0) {
+	        		empty = 0;
 	        		hv_store(conf, arg, 3, newSViv(1), 0);
+	        		hv_store(avg_conf, arg, 3, newSViv(1), 0);
 	        	}  
 	        	else if (strcmp(arg,"sum") == 0) {
+	        		empty = 0;
 	        		hv_store(conf, arg, 3, newSVnv(value), 0);
+	        		hv_store(avg_conf, arg, 3, newSVnv(value), 0);
 	        	}
 	        	else if (strcmp(arg,"avg") == 0) {
+	        		empty = 0;
 	        		hv_store(conf, arg, 3, newSVnv(value), 0);
-	        		hv_store(conf, "sum", 3, newSVnv(value), 0);
-	        		hv_store(conf, "cnt", 3, newSViv(1), 0);
+	        		hv_store(avg_conf, "cnt", 3, newSViv(1), 0);
+	        		hv_store(avg_conf, "sum", 3, newSVnv(value), 0);
 	        	}
 	        	else if (strcmp(arg,"min") == 0) {
+	        		empty = 0;
 	        		hv_store(conf, arg, 3, newSVnv(value), 0);
 	        	}
 	        	else if (strcmp(arg,"max") == 0) {
+	        		empty = 0;
 	        		hv_store(conf, arg, 3, newSVnv(value), 0);
 	        	}
 	        }
 	        FREETMPS;
 	        LEAVE;
-	        hv_store(metrics, name, strlen(name), newRV((SV *)conf), 0);
+	        if (!empty) {
+		        hv_store(metrics, name, strlen(name), newRV((SV *)conf), 0);
+		        hv_store(avg_info, name, strlen(name), newRV((SV *)avg_conf), 0);
+		    }
 		}
 
 
@@ -140,8 +173,8 @@ stat (r_self)
 			croak("object must contain keys 'metrics' and 'code'");
 		// Fetch metrics and code
 		SV **r__metrics = hv_fetchs(self, "metrics", 0);
-		SV **r__code = hv_fetchs(self, "code", 0);
-		if (!( r__metrics && r__code )) croak("Non allow NULL in metrics and code values");
+
+		if (!( r__metrics)) croak("Non allow NULL in metrics values");
 
 		SV *__metrics = *r__metrics;
 		if (!( SvOK(__metrics) && SvROK(__metrics) )) croak("metrics must be a hashref");
@@ -149,28 +182,14 @@ stat (r_self)
 		if (SvTYPE(_metrics) != SVt_PVHV) croak("metrics must be a hashref");
 		HV *metrics = (HV*)_metrics;
 
-		SV *__code = *r__code;
-		if (!SvOK(__code)) croak("config must be a ref");
-		SV *_code = SvRV(__code);
-		if (SvTYPE(_code) != SVt_PVCV) croak("code must be a coderef");
+		SV* result = newSVsv(newRV(_metrics));
 
-		HV* result = newHV();
+		HV* empty_info = newHV();
+		HV* empty_metrics = newHV();
 
-		HV* copy_value = newHV();
-
-		char *key;
-	    I32 key_length;
-	    SV *value;
-	    HV *_value;
-
-		hv_iterinit(metrics);
-		while (value = hv_iternextsv(metrics, &key, &key_length)) {
-			_value = (HV*)value;
-			RETVAL = newRV((SV*)value);
-		}
-
-		SV** _val = hv_fetch(_value, "sum", 3, 0);
-		// if (SvRV())
-		
+		hv_store(self, "avg_info", strlen("avg_info"), newRV((SV *)empty_info), 0);
+		hv_store(self, "metrics", strlen("metrics"), newRV((SV *)empty_metrics), 0);
+		RETVAL = result;
 	OUTPUT:
 		RETVAL
+		
